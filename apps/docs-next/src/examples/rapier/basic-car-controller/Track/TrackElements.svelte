@@ -5,14 +5,14 @@
   import type { ElementConfigurations } from './types'
 
   export let sheet: ISheet
-  export let levelId: string
+  export let trackId: string
   export let sheetObjectName: string
 
   export let elementConfigurations: ElementConfigurations
   /**
-   * This is a map of all the sheet objects in the level
+   * This is a map of all the sheet objects in the track
    */
-  const levelSheetObjects = currentWritable<Record<string, ISheetObject>>({})
+  const trackSheetObjects = currentWritable<Record<string, ISheetObject>>({})
 
   let entities = elementConfigurations.reduce((acc, element) => {
     acc[element.name] = ''
@@ -68,7 +68,7 @@
   {objects}
   {sheetObject}
   {entities}
-  {levelSheetObjects}
+  {trackSheetObjects}
   {checkpointCount}
   {finishCount}
 />

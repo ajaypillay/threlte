@@ -12,10 +12,10 @@
   <div class="flex flex-col justify-center items-center h-[33vh] tracking-widest">
     <button
       on:click={() => {
-        actions.startLevelEditor('some-id')
+        actions.startTrackEditor('some-id')
       }}
     >
-      Create Level
+      Create Track
     </button>
   </div>
 </UiWrapper>

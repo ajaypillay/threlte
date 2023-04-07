@@ -4,14 +4,14 @@
 >
   import { currentWritable, CurrentWritable, useFrame } from '@threlte/core'
 
-  type LevelStateContext = {
+  type TrackStateContext = {
     checkpointsReached: CurrentWritable<Set<string>>
     registerCheckpointReached: (checkpointId: string) => void
     registerFinishReached: () => void
   }
 
-  export const useLevelState = () => {
-    return getContext<LevelStateContext>('level-state')
+  export const useTrackState = () => {
+    return getContext<TrackStateContext>('track-state')
   }
 </script>
 
@@ -19,7 +19,7 @@
   import { createEventDispatcher, getContext, setContext } from 'svelte'
   import { actions, gameState } from '../stores/app'
 
-  const { levelState, gameType, paused } = gameState
+  const { trackState, gameType, paused } = gameState
 
   export let checkpointCount: number
   export let finishCount: number
@@ -27,11 +27,11 @@
   $: if (finishCount < 1) console.warn('No finish found')
 
   const dispatch = createEventDispatcher<{
-    levelcomplete: void
+    trackcomplete: void
   }>()
 
   const checkpointsReached = currentWritable(new Set<string>())
-  let levelComplete = false
+  let trackComplete = false
 
   const registerCheckpointReached = (checkpointId: string) => {
     checkpointsReached.update((set) => {
@@ -42,36 +42,36 @@
 
   const registerFinishReached = () => {
     if (checkpointsReached.current.size === checkpointCount) {
-      dispatch('levelcomplete')
-      levelComplete = true
+      dispatch('trackcomplete')
+      trackComplete = true
     }
   }
 
-  const levelStateContext: LevelStateContext = {
+  const trackStateContext: TrackStateContext = {
     checkpointsReached,
     registerCheckpointReached,
     registerFinishReached
   }
 
-  setContext<LevelStateContext>('level-state', levelStateContext)
+  setContext<TrackStateContext>('track-state', trackStateContext)
 
-  const resetLevelState = () => {
+  const resetTrackState = () => {
     checkpointsReached.update((set) => {
       set.clear()
       return set
     })
-    levelComplete = false
+    trackComplete = false
   }
 
   useFrame((_, delta) => {
     if ($gameType !== 'time-attack') return
-    if ($levelState !== 'playing') return
+    if ($trackState !== 'playing') return
     if ($paused) return
     actions.incrementTimeAttackTime(delta * 1000)
   })
 
-  actions.use('softResetTimeAttack', resetLevelState)
-  actions.use('resetTimeAttack', resetLevelState)
+  actions.use('softResetTimeAttack', resetTrackState)
+  actions.use('resetTimeAttack', resetTrackState)
 </script>
 
-<slot {levelComplete} />
+<slot {trackComplete} />

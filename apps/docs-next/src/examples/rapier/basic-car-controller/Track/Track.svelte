@@ -3,8 +3,8 @@
   import { interactivity } from '@threlte/extras'
   import { Editable, Project, Sheet, Studio } from '@threlte/theatre'
   import ElementSelector from './ElementSelector.svelte'
-  import LevelEditor from './LevelEditor.svelte'
-  import LevelElements from './LevelElements.svelte'
+  import TrackEditor from './TrackEditor.svelte'
+  import TrackElements from './TrackElements.svelte'
   import RegisterSheetObject from './RegisterSheetObject.svelte'
   import SelectedSheetObject from './SelectedSheetObject.svelte'
   import Selection from './Selection.svelte'
@@ -28,28 +28,28 @@
   import Ramp from './Elements/Ramp.svelte'
   import RampInverse from './Elements/RampInverse.svelte'
   import Slope from './Elements/Slope.svelte'
-  import LevelState from './LevelState.svelte'
+  import TrackState from './TrackState.svelte'
   import LoadEvent from './LoadEvent.svelte'
   import SheetObjectProvider from './SheetObjectProvider.svelte'
 
-  const { gameType, levelId, levelEditor, paused } = gameState
-  const { view } = levelEditor
+  const { gameType, trackId, trackEditor, paused } = gameState
+  const { view } = trackEditor
 
   useKeyPress('e', () => {
-    if ($gameType !== 'level-editor') return
+    if ($gameType !== 'track-editor') return
     if ($view === 'editor') {
-      actions.setLevelEditorView('game')
+      actions.setTrackEditorView('game')
     } else if ($view === 'game') {
-      actions.setLevelEditorView('editor')
+      actions.setTrackEditorView('editor')
     }
   })
 
-  const showLevelEditorUi = derived([gameType, view, paused], ([gameType, view, paused]) => {
-    return gameType === 'level-editor' && view === 'editor' && !paused
+  const showTrackEditorUi = derived([gameType, view, paused], ([gameType, view, paused]) => {
+    return gameType === 'track-editor' && view === 'editor' && !paused
   })
 
-  if ($gameType === 'level-editor') {
-    // setup interactivity if we're in the level editor
+  if ($gameType === 'track-editor') {
+    // setup interactivity if we're in the track editor
     interactivity()
   }
 
@@ -143,21 +143,21 @@
 
   const getProjectConfig = async () => {
     try {
-      const text = await import(`./levels/${$levelId}.json?raw`)
+      const text = await import(`./tracks/${$trackId}.json?raw`)
       return {
         state: JSON.parse(text.default)
       }
     } catch (error) {
-      console.log(`Level state for level ${$levelId} not found.`)
+      console.log(`Track state for track ${$trackId} not found.`)
       return undefined
     }
   }
 
   const getProjectName = () => {
-    if ($gameType === 'level-editor') {
-      return `${$levelId}-edit`
+    if ($gameType === 'track-editor') {
+      return `${$trackId}-edit`
     } else {
-      return $levelId
+      return $trackId
     }
   }
 </script>
@@ -167,71 +167,71 @@
 
 {#await getProjectConfig() then config}
   <Studio
-    enabled={$gameType === 'level-editor'}
-    hide={!$showLevelEditorUi}
+    enabled={$gameType === 'track-editor'}
+    hide={!$showTrackEditorUi}
   >
     <Project
       name={getProjectName()}
       {config}
     >
       <Sheet
-        name={`${$levelId}`}
+        name={`${$trackId}`}
         let:sheet
       >
-        <LevelElements
-          sheetObjectName={`${$levelId}-elements`}
+        <TrackElements
+          sheetObjectName={`${$trackId}-elements`}
           {sheet}
           {elementConfigurations}
-          levelId={$levelId}
+          trackId={$trackId}
           let:objects
           let:sheetObject
           let:entities
-          let:levelSheetObjects
+          let:trackSheetObjects
           let:checkpointCount
           let:finishCount
         >
-          <LevelEditor
+          <TrackEditor
             {entities}
             {sheetObject}
             {elementConfigurations}
-            {levelSheetObjects}
+            {trackSheetObjects}
           />
 
           <SelectedSheetObject let:selectedObjectKey>
-            <LevelState
+            <TrackState
               {checkpointCount}
               {finishCount}
-              let:levelComplete
-              on:levelcomplete
+              let:trackComplete
+              on:trackcomplete
             >
-              <LoadEvent on:levelloaded />
+              <LoadEvent on:trackloaded />
 
-              <!-- Level Content -->
+              <!-- Track Content -->
               {#each objects as [component, name, ids] (name)}
                 {#each ids as id (`${name}-${id}`)}
                   <T.Group>
                     <Editable
-                      controls={$showLevelEditorUi}
+                      controls={$showTrackEditorUi}
                       transform
                       name={`${name}-${id}`}
                       let:object
                     >
                       <ElementContext name={`${name}-${id}`}>
-                        {#if $gameType === 'level-editor'}
-                          <!-- Level editor mode -->
-                          <!-- Register the sheet object is only mandatory for the level editor -->
+                        {#if $gameType === 'track-editor'}
+                          <!-- Track editor mode -->
+                          <!-- Register the sheet object is only mandatory for the track editor -->
                           <RegisterSheetObject
                             {object}
-                            {levelSheetObjects}
+                            {trackSheetObjects}
                           />
                           <SheetObjectProvider sheetObject={object}>
                             <ElementSelector
                               {object}
-                              allowSelecting={$showLevelEditorUi}
+                              allowSelecting={$showTrackEditorUi}
                             >
                               <svelte:component this={component}>
                                 <svelte:fragment slot="selection">
-                                  {#if $showLevelEditorUi && selectedObjectKey === object.address.objectKey}
+                                  {#if $showTrackEditorUi && selectedObjectKey === object.address.objectKey}
                                     <Selection />
                                   {/if}
                                 </svelte:fragment>
@@ -248,10 +248,10 @@
                 {/each}
               {/each}
 
-              <slot {levelComplete} />
-            </LevelState>
+              <slot {trackComplete} />
+            </TrackState>
           </SelectedSheetObject>
-        </LevelElements>
+        </TrackElements>
       </Sheet>
     </Project>
   </Studio>

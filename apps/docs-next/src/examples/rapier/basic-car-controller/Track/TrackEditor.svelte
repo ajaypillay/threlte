@@ -9,7 +9,7 @@
   export let sheetObject: ISheetObject
   export let entities: Record<string, string>
   export let elementConfigurations: ElementConfigurations
-  export let levelSheetObjects: CurrentWritable<Record<string, ISheetObject>>
+  export let trackSheetObjects: CurrentWritable<Record<string, ISheetObject>>
 
   const { studio } = useStudio()
 
@@ -45,7 +45,7 @@
     studio: IStudio,
     entities: Record<string, string>,
     sheetObject: ISheetObject,
-    levelSheetObjects: Record<string, ISheetObject>
+    trackSheetObjects: Record<string, ISheetObject>
   ) => {
     const [currentSelection] = studio.selection
     if (!isISheetObject(currentSelection)) return
@@ -76,7 +76,7 @@
     // we need to poll here because unsubscribing immediately
     // after subscribing is dangerous
     interval = setInterval(() => {
-      const object = levelSheetObjects[`${elementName}-${newId}`]
+      const object = trackSheetObjects[`${elementName}-${newId}`]
       if (object) {
         studio.transaction(({ set }) => {
           set(object.props, valuesToApply)
@@ -122,7 +122,7 @@
               '<svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" fill="#fff" viewBox="0 0 256 256"><path d="M184,64H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H184a8,8,0,0,0,8-8V72A8,8,0,0,0,184,64Zm-8,144H48V80H176ZM224,40V184a8,8,0,0,1-16,0V48H72a8,8,0,0,1,0-16H216A8,8,0,0,1,224,40Z"></path></svg>',
             onClick: () => {
               if (!sheetObject) return
-              duplicateElement(studio, entities, sheetObject, levelSheetObjects.current)
+              duplicateElement(studio, entities, sheetObject, trackSheetObjects.current)
             }
           }
 
@@ -223,7 +223,7 @@
                   // we need to poll here because unsubscribing immediately
                   // after subscribing is dangerous
                   interval = setInterval(() => {
-                    const object = levelSheetObjects.current[`${element.name}-${newId}`]
+                    const object = trackSheetObjects.current[`${element.name}-${newId}`]
                     if (object) {
                       studio.transaction(({ set }) => {
                         set(object.props, valuesToApply)
@@ -253,7 +253,7 @@
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'D' && e.getModifierState('Shift') && studio.current && sheetObject) {
       e.preventDefault()
-      duplicateElement(studio.current, entities, sheetObject, levelSheetObjects.current)
+      duplicateElement(studio.current, entities, sheetObject, trackSheetObjects.current)
     }
     if (e.key === 'Backspace' && e.getModifierState('Control')) {
       if (!studio.current || !sheetObject) return

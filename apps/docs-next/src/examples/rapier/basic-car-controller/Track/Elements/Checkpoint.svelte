@@ -14,7 +14,7 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
   import { Group, Mesh } from 'three'
   import { gameState } from '../../stores/app'
   import { useElement } from '../ElementContext.svelte'
-  import { useLevelState } from '../LevelState.svelte'
+  import { useTrackState } from '../TrackState.svelte'
   import { useRefreshCollider } from '../utils/useRefreshCollider'
 
   type GLTFResult = {
@@ -49,7 +49,7 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
   const { paused } = gameState
 
   const { name } = useElement()
-  const { registerCheckpointReached, checkpointsReached } = useLevelState()
+  const { registerCheckpointReached, checkpointsReached } = useTrackState()
 
   const checkpointReached = derived(checkpointsReached, (checkpointsReached) => {
     return checkpointsReached.has(name)

@@ -15,7 +15,7 @@
   import { useTexture } from '@threlte/extras'
   import { Collider, CollisionGroups } from '@threlte/rapier'
   import { BoxGeometry, MeshStandardMaterial } from 'three'
-  import { useLevelState } from '../LevelState.svelte'
+  import { useTrackState } from '../TrackState.svelte'
   import { useRefreshCollider } from '../utils/useRefreshCollider'
 
   // color: 'Dark' | 'Green' | 'Light' | 'Orange' | 'Purple' | 'Red' = 'Dark'
@@ -27,7 +27,7 @@
     material.needsUpdate = true
   }
 
-  const { registerFinishReached } = useLevelState()
+  const { registerFinishReached } = useTrackState()
 
   const { refreshFns } = useRefreshCollider()
 </script>

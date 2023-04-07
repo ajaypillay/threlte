@@ -2,10 +2,10 @@
   import { createEventDispatcher, onMount } from 'svelte'
 
   const dispatch = createEventDispatcher<{
-    levelloaded: void
+    trackloaded: void
   }>()
 
   onMount(() => {
-    dispatch('levelloaded')
+    dispatch('trackloaded')
   })
 </script>

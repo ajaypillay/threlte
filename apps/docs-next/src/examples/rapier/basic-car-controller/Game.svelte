@@ -6,11 +6,11 @@
   import { DEG2RAD } from 'three/src/math/MathUtils'
   import Car from './Car.svelte'
   import CountIn from './CountIn.svelte'
-  import Level from './Level/Level.svelte'
+  import Track from './Track/Track.svelte'
   import MuscleCar from './MuscleCar.svelte'
   import MuscleCarWheel from './MuscleCarWheel.svelte'
   import GamePauseMenu from './UI/GamePauseMenu.svelte'
-  import LevelIntroMenu from './UI/LevelIntroMenu.svelte'
+  import TrackIntroMenu from './UI/TrackIntroMenu.svelte'
   import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
   import TimeAttackUi from './UI/TimeAttackUi.svelte'
   import { actions, appState, gameState } from './stores/app'
@@ -19,25 +19,25 @@
   import LoadingUi from './UI/LoadingUi.svelte'
   import { sunPos } from './config'
 
-  const { gameType, levelState, levelEditor, paused, levelId } = gameState
-  const { view } = levelEditor
+  const { gameType, trackState, trackEditor, paused, trackId } = gameState
+  const { view } = trackEditor
   const { visibility, debug } = appState
 
   useKeyPress('Enter', () => {
-    if ($levelState === 'level-intro') {
-      // when we're in the level editor, we jump straight to game play without a
+    if ($trackState === 'track-intro') {
+      // when we're in the track editor, we jump straight to game play without a
       // count-in.
-      if ($gameType === 'level-editor') {
+      if ($gameType === 'track-editor') {
         actions.startGamePlay()
       } else {
         // For other game modes, we start the count-in.
         actions.startCountIn()
       }
     }
-    if ($levelState === 'finished' && $gameType === 'time-attack') {
+    if ($trackState === 'finished' && $gameType === 'time-attack') {
       actions.resetTimeAttack()
     }
-    if ($levelState === 'playing' && $gameType === 'time-attack') {
+    if ($trackState === 'playing' && $gameType === 'time-attack') {
       actions.softResetTimeAttack()
     }
   })
@@ -47,38 +47,38 @@
   })
 
   const carActive = derived(
-    [gameType, levelState, visibility, view, paused],
-    ([gameType, levelState, visibility, view, paused]) => {
+    [gameType, trackState, visibility, view, paused],
+    ([gameType, trackState, visibility, view, paused]) => {
       if (visibility === 'hidden') return false
-      if (gameType === 'level-editor' && view === 'editor') return false
+      if (gameType === 'track-editor' && view === 'editor') return false
       if (paused) return false
-      if (levelState === 'playing' || levelState === 'finished') return true
+      if (trackState === 'playing' || trackState === 'finished') return true
       return false
     }
   )
 
-  const showCountIn = derived([gameType, levelState, paused], ([gameType, levelState, paused]) => {
-    if (gameType === 'level-editor') return false
-    if (levelState !== 'count-in') return false
+  const showCountIn = derived([gameType, trackState, paused], ([gameType, trackState, paused]) => {
+    if (gameType === 'track-editor') return false
+    if (trackState !== 'count-in') return false
     if (paused) return false
     return true
   })
 
-  const showLevelIntro = derived(
-    [gameType, view, levelState, paused],
-    ([gameType, view, levelState, paused]) => {
+  const showTrackIntro = derived(
+    [gameType, view, trackState, paused],
+    ([gameType, view, trackState, paused]) => {
       if (paused) return false
-      if (levelState !== 'level-intro') return false
-      if (gameType === 'level-editor' && view === 'editor') return false
+      if (trackState !== 'track-intro') return false
+      if (gameType === 'track-editor' && view === 'editor') return false
       return true
     }
   )
 
   const showTimeAttackUi = derived(
-    [gameType, levelState, paused],
-    ([gameType, levelState, paused]) => {
+    [gameType, trackState, paused],
+    ([gameType, trackState, paused]) => {
       if (gameType !== 'time-attack') return false
-      if (levelState !== 'playing') return false
+      if (trackState !== 'playing') return false
       if (paused) return false
       return true
     }
@@ -86,18 +86,18 @@
 
   const carVolume = derived([paused, gameType, view], ([paused, gameType, view]) => {
     if (paused) return 0
-    if (gameType === 'level-editor' && view === 'editor') return 0
+    if (gameType === 'track-editor' && view === 'editor') return 0
     return 1
   })
 
-  const showTimeAttackFinishedUi = derived([gameType, levelState], ([gameType, levelState]) => {
+  const showTimeAttackFinishedUi = derived([gameType, trackState], ([gameType, trackState]) => {
     if (gameType !== 'time-attack') return false
-    if (levelState !== 'finished') return false
+    if (trackState !== 'finished') return false
     return true
   })
 
-  const showLevel = derived(levelState, (levelState) => {
-    return levelState !== 'loading-level'
+  const showTrack = derived(trackState, (trackState) => {
+    return trackState !== 'loading-track'
   })
 
   let gameCam: PerspectiveCamera
@@ -105,22 +105,22 @@
 
   const { scene } = useThrelte()
 
-  const currentCam = derived([gameType, levelState, view], ([gameType, levelState, view]) => {
-    if (gameType === 'level-editor' && view === 'editor') return 'edit'
-    if (levelState === 'finished') return 'finish'
+  const currentCam = derived([gameType, trackState, view], ([gameType, trackState, view]) => {
+    if (gameType === 'track-editor' && view === 'editor') return 'edit'
+    if (trackState === 'finished') return 'finish'
     return 'game'
   })
 
   let respawnCar: () => void
 
-  const onLevelComplete = () => {
+  const onTrackComplete = () => {
     const worldPosition = new Vector3()
     const worldQuaternion = new Quaternion()
     gameCam.getWorldPosition(worldPosition)
     gameCam.getWorldQuaternion(worldQuaternion)
     finishCam.position.copy(worldPosition)
     finishCam.quaternion.copy(worldQuaternion)
-    actions.levelFinished()
+    actions.trackFinished()
   }
 
   actions.use('softResetTimeAttack', () => {
@@ -131,7 +131,7 @@
   })
 </script>
 
-{#if $levelState === 'loading-level'}
+{#if $trackState === 'loading-track'}
   <LoadingUi />
 {/if}
 
@@ -147,8 +147,8 @@
   <TimeAttackFinished />
 {/if}
 
-{#if $showLevelIntro}
-  <LevelIntroMenu levelId={$levelId} />
+{#if $showTrackIntro}
+  <TrackIntroMenu trackId={$trackId} />
 {/if}
 
 {#if $showCountIn}
@@ -159,13 +159,13 @@
   />
 {/if}
 
-<T.Group visible={$showLevel}>
-  <Level
-    on:levelcomplete={() => {
-      onLevelComplete()
+<T.Group visible={$showTrack}>
+  <Track
+    on:trackcomplete={() => {
+      onTrackComplete()
     }}
-    on:levelloaded={() => {
-      actions.levelLoaded()
+    on:trackloaded={() => {
+      actions.trackLoaded()
     }}
   >
     <!-- FINISH CAM -->
@@ -251,7 +251,7 @@
       </svelte:fragment>
     </Car>
 
-    <!-- Level editing camera -->
+    <!-- Track editing camera -->
     <T.PerspectiveCamera
       position.x={30}
       position.y={30}
@@ -261,5 +261,5 @@
     >
       <OrbitControls />
     </T.PerspectiveCamera>
-  </Level>
+  </Track>
 </T.Group>

@@ -21,20 +21,20 @@ type AppState = {
 }
 
 type MenuState = {
-  readonly state: CurrentWritable<'main' | 'user-levels' | 'campaign' | 'options' | 'credits'>
+  readonly state: CurrentWritable<'main' | 'user-tracks' | 'campaign' | 'options' | 'credits'>
 }
 
-type GameType = 'time-attack' | 'level-editor'
-type LevelState = 'loading-level' | 'level-intro' | 'count-in' | 'playing' | 'finished'
+type GameType = 'time-attack' | 'track-editor'
+type TrackState = 'loading-track' | 'track-intro' | 'count-in' | 'playing' | 'finished'
 type GameState = {
-  readonly levelId: CurrentWritable<string>
+  readonly trackId: CurrentWritable<string>
   readonly gameType: CurrentWritable<GameType>
-  readonly levelState: CurrentWritable<LevelState>
+  readonly trackState: CurrentWritable<TrackState>
   readonly paused: CurrentWritable<boolean>
   readonly timeAttack: {
     readonly time: CurrentWritable<number>
   }
-  readonly levelEditor: {
+  readonly trackEditor: {
     readonly view: CurrentWritable<'game' | 'editor'>
   }
 }
@@ -81,14 +81,14 @@ export const menuState = {
  * -----------------------------------------------------
  */
 const _gameState: GameState = {
-  levelState: createState('loading-level'),
+  trackState: createState('loading-track'),
   gameType: createState('time-attack'),
-  levelId: createState('level-1'),
+  trackId: createState('track-1'),
   paused: createState(false),
   timeAttack: {
     time: createState(0)
   },
-  levelEditor: {
+  trackEditor: {
     view: createState('editor')
   }
 }
@@ -97,15 +97,15 @@ const _gameState: GameState = {
  * Immutable game state
  */
 export const gameState = {
-  levelState: toCurrentReadable(_gameState.levelState),
+  trackState: toCurrentReadable(_gameState.trackState),
   gameType: toCurrentReadable(_gameState.gameType),
-  levelId: toCurrentReadable(_gameState.levelId),
+  trackId: toCurrentReadable(_gameState.trackId),
   paused: toCurrentReadable(_gameState.paused),
   timeAttack: {
     time: toCurrentReadable(_gameState.timeAttack.time)
   },
-  levelEditor: {
-    view: toCurrentReadable(_gameState.levelEditor.view)
+  trackEditor: {
+    view: toCurrentReadable(_gameState.trackEditor.view)
   }
 }
 
@@ -144,9 +144,9 @@ export const actions = buildActions(
       _menuState.state.set('campaign')
     },
 
-    goToUserLevelsMenu: () => {
+    goToUserTracksMenu: () => {
       _appState.state.set('menu')
-      _menuState.state.set('user-levels')
+      _menuState.state.set('user-tracks')
     },
 
     goToOptionsMenu: () => {
@@ -168,34 +168,34 @@ export const actions = buildActions(
      * as possible and reasonable.
      */
 
-    startTimeAttack: (levelId: string) => {
+    startTimeAttack: (trackId: string) => {
       _appState.state.set('game')
-      _gameState.levelState.set('loading-level')
-      _gameState.levelId.set(levelId)
+      _gameState.trackState.set('loading-track')
+      _gameState.trackId.set(trackId)
       _gameState.paused.set(false)
       _gameState.gameType.set('time-attack')
       _gameState.timeAttack.time.set(0)
     },
 
-    startLevelEditor: (levelId: string) => {
+    startTrackEditor: (trackId: string) => {
       _appState.state.set('game')
-      _gameState.levelState.set('loading-level')
-      _gameState.levelId.set(levelId)
+      _gameState.trackState.set('loading-track')
+      _gameState.trackId.set(trackId)
       _gameState.paused.set(false)
-      _gameState.gameType.set('level-editor')
-      _gameState.levelEditor.view.set('editor')
+      _gameState.gameType.set('track-editor')
+      _gameState.trackEditor.view.set('editor')
     },
 
-    levelLoaded: () => {
+    trackLoaded: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.levelState.current !== 'loading-level') return false
-      _gameState.levelState.set('level-intro')
+      if (_gameState.trackState.current !== 'loading-track') return false
+      _gameState.trackState.set('track-intro')
     },
 
     startCountIn: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.levelState.current !== 'level-intro') return false
-      _gameState.levelState.set('count-in')
+      if (_gameState.trackState.current !== 'track-intro') return false
+      _gameState.trackState.set('count-in')
     },
 
     /**
@@ -203,17 +203,17 @@ export const actions = buildActions(
      */
     startGamePlay: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.levelState.current !== 'count-in') return false
-      _gameState.levelState.set('playing')
+      if (_gameState.trackState.current !== 'count-in') return false
+      _gameState.trackState.set('playing')
     },
 
     /**
-     * The level is finished, the user may restart the level.
+     * The track is finished, the user may restart the track.
      */
-    levelFinished: () => {
+    trackFinished: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.levelState.current !== 'playing') return false
-      _gameState.levelState.set('finished')
+      if (_gameState.trackState.current !== 'playing') return false
+      _gameState.trackState.set('finished')
     },
 
     /**
@@ -224,43 +224,43 @@ export const actions = buildActions(
     incrementTimeAttackTime: (time: number) => {
       if (_appState.state.current !== 'game') return false
       if (_gameState.gameType.current !== 'time-attack') return false
-      if (_gameState.levelState.current !== 'playing') return false
+      if (_gameState.trackState.current !== 'playing') return false
       if (_gameState.paused.current) return false
       _gameState.timeAttack.time.update((t) => t + time)
       return { debug: false }
     },
 
     /**
-     * After finishing a level, the user may restart the level.
+     * After finishing a track, the user may restart the track.
      * We begin *before* the count-in.
      */
     resetTimeAttack: () => {
       if (_appState.state.current !== 'game') return false
-      _gameState.levelState.set('level-intro')
+      _gameState.trackState.set('track-intro')
       _gameState.timeAttack.time.set(0)
     },
 
     /**
-     * While playing the level, the user may soft-reset the level.
+     * While playing the track, the user may soft-reset the track.
      * We begin *during* the count-in, so the game play is not affected.
      */
     softResetTimeAttack: () => {
       if (_appState.state.current !== 'game') return false
       // a soft reset can only be done while playing
-      if (_gameState.levelState.current !== 'playing') return false
+      if (_gameState.trackState.current !== 'playing') return false
       // and not while paused
       if (_gameState.paused.current) return false
-      _gameState.levelState.set('count-in')
+      _gameState.trackState.set('count-in')
       _gameState.timeAttack.time.set(0)
     },
 
-    setLevelEditorView: (view: 'game' | 'editor') => {
+    setTrackEditorView: (view: 'game' | 'editor') => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.gameType.current !== 'level-editor') return false
+      if (_gameState.gameType.current !== 'track-editor') return false
       if (view === 'game') {
-        _gameState.levelState.set('playing')
+        _gameState.trackState.set('playing')
       }
-      _gameState.levelEditor.view.set(view)
+      _gameState.trackEditor.view.set(view)
     },
 
     pauseGame: () => {
@@ -315,7 +315,7 @@ export const loadStateFromLocalStorage = () => {
     const currentPathParts = currentPath.split('.').filter((p) => p.length)
     const currentData = currentPathParts.reduce((acc, p) => acc[p], data)
     for (const key in currentData) {
-      // if (key === 'levelEditor') debugger
+      // if (key === 'trackEditor') debugger
       if (data[key] instanceof Object) {
         if (currentPath.length) {
           currentPath += '.' + key

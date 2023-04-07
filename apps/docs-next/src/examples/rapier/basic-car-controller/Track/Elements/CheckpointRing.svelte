@@ -18,7 +18,7 @@
   import { AutoColliders, Collider, CollisionGroups } from '@threlte/rapier'
   import { MeshStandardMaterial, TorusGeometry } from 'three'
   import { useElement } from '../ElementContext.svelte'
-  import { useLevelState } from '../LevelState.svelte'
+  import { useTrackState } from '../TrackState.svelte'
   import { useRefreshCollider } from '../utils/useRefreshCollider'
 
   // color: 'Dark' | 'Green' | 'Light' | 'Orange' | 'Purple' | 'Red' = 'Dark'
@@ -35,7 +35,7 @@
   const { refreshFns } = useRefreshCollider()
 
   const { name } = useElement()
-  const { registerCheckpointReached } = useLevelState()
+  const { registerCheckpointReached } = useTrackState()
 </script>
 
 <T.Group {...$$restProps}>

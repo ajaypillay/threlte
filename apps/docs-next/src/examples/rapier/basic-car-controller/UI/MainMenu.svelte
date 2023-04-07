@@ -22,10 +22,10 @@
 
     <Button
       on:click={() => {
-        actions.goToUserLevelsMenu()
+        actions.goToUserTracksMenu()
       }}
     >
-      User Levels
+      User Tracks
     </Button>
   </div>
 </UiWrapper>

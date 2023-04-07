@@ -7,7 +7,7 @@
   import { Color, PerspectiveCamera } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
   import CameraFade from './CameraFade.svelte'
-  import HalfBox from './Level/Elements/HalfBox.svelte'
+  import HalfBox from './Track/Elements/HalfBox.svelte'
   import MuscleCar from './MuscleCar.svelte'
   import MuscleCarWheel from './MuscleCarWheel.svelte'
   import { actions, appState } from './stores/app'

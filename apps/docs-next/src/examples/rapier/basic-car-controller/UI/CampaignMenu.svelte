@@ -6,17 +6,17 @@
   import Button from './components/Button.svelte'
   import TopBar from './components/TopBar.svelte'
 
-  let levelIds: string[] = []
+  let trackIds: string[] = []
 
-  const fetchAllLevels = async () => {
-    const jsons = await import.meta.glob('../Level/levels/**.json')
+  const fetchAllTracks = async () => {
+    const jsons = await import.meta.glob('../Track/tracks/**.json')
     const keys = Object.keys(jsons) as string[]
-    levelIds = keys
+    trackIds = keys
       .map((key) => key.split('/').pop()?.split('.').shift())
       .filter(Boolean) as string[]
   }
 
-  fetchAllLevels()
+  fetchAllTracks()
 
   useKeyDown('Escape', () => {
     actions.goToMainMenu()
@@ -38,13 +38,13 @@
   </TopBar>
 
   <div class="flex flex-col justify-center items-center h-[33vh]">
-    {#each levelIds as levelId}
+    {#each trackIds as trackId}
       <Button
         on:click={() => {
-          actions.startTimeAttack(levelId)
+          actions.startTimeAttack(trackId)
         }}
       >
-        {levelId}
+        {trackId}
       </Button>
     {/each}
   </div>
