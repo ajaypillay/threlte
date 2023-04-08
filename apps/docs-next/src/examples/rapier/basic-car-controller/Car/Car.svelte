@@ -11,6 +11,7 @@
   let respawnCar: () => void
   export let debug = false
   export let active = false
+  export let useCarCamera = true
   export let volume = 1
 
   export const respawn = () => {
@@ -34,7 +35,7 @@
     slot="camera"
     rotation={[-90 * DEG2RAD, 75 * DEG2RAD, 90 * DEG2RAD]}
     fov={70}
-    makeDefault
+    makeDefault={useCarCamera}
   />
 
   <svelte:fragment

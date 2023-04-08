@@ -21,12 +21,12 @@
   import TrackDetails from './UI/TrackDetails.svelte'
   import { createTrackEditorContext } from './context'
   import StartTrackValidation from './UI/StartTrackValidation.svelte'
-  import { gameState } from '../../stores/app'
+  import { actions, gameState } from '../../stores/app'
   import Car from '../../Car/Car.svelte'
 
   export let trackData: TrackData
 
-  const { state } = gameState.trackEditor
+  const { state, editorView } = gameState.trackEditor
 
   interactivity()
 
@@ -64,6 +64,16 @@
   useKeyUp('Shift', () => {
     transformSnap.set(false)
   })
+
+  useKeyDown('v', () => {
+    if ($editorView === 'car') {
+      actions.setTrackEditorView('orbit')
+    } else {
+      actions.setTrackEditorView('car')
+    }
+  })
+
+  $: carActive = $editorView === 'car'
 </script>
 
 {#if $state === 'editing'}
@@ -119,12 +129,22 @@
 </TrackState>
 
 {#if $state === 'editing'}
+  <Car
+    active={carActive}
+    useCarCamera={carActive}
+    volume={carActive ? 1 : 0}
+  />
+
   <T.PerspectiveCamera
-    makeDefault
-    position={[30, 30, 30]}
+    makeDefault={!carActive}
+    on:create={({ ref }) => {
+      ref.position.set(30, 30, 30)
+      ref.lookAt(0, 0, 0)
+    }}
   >
     <OrbitControls />
   </T.PerspectiveCamera>
 {:else if $state === 'validating'}
+  <!-- TODO: Maybe make a new component from that part. -->
   <Car active />
 {/if}
