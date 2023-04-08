@@ -13,8 +13,8 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
   import type * as THREE from 'three'
   import { Group, Mesh } from 'three'
   import { gameState } from '../../stores/app'
-  import { useElement } from '../ElementContext.svelte'
   import { useTrackState } from '../TrackState.svelte'
+  import { useTrackElement } from '../TrackViewer/TrackElement.svelte'
   import { useRefreshCollider } from '../utils/useRefreshCollider'
 
   type GLTFResult = {
@@ -48,11 +48,11 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
 
   const { paused } = gameState
 
-  const { name } = useElement()
+  const { id } = useTrackElement()
   const { registerCheckpointReached, checkpointsReached } = useTrackState()
 
   const checkpointReached = derived(checkpointsReached, (checkpointsReached) => {
-    return checkpointsReached.has(name)
+    return checkpointsReached.has(id)
   })
 
   let signMesh: Mesh
@@ -143,7 +143,7 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
           args={[5, 2.5, 5]}
           bind:refresh={refreshFns[2]}
           on:sensorenter={() => {
-            registerCheckpointReached(name)
+            registerCheckpointReached(id)
           }}
           sensor
         />
