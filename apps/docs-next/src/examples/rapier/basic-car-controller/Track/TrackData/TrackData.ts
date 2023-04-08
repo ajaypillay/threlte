@@ -1,4 +1,4 @@
-import type { Readable } from 'svelte/store'
+import { Readable, derived } from 'svelte/store'
 import type { Vector3Tuple } from 'three'
 import type { trackElementPrototypes } from '../Elements/elements'
 import { JsonCurrentWritable, jsonCurrentWritable } from '../jsonCurrentWritable'
@@ -98,11 +98,27 @@ export class TrackData {
   #validated: JsonCurrentWritable<boolean> = jsonCurrentWritable(false)
   validated: JsonCurrentReadable<boolean> = jsonCurrentReadable(this.#validated)
 
+  public setValidated(validated: boolean) {
+    this.#validated.set(validated)
+    this.toLocalStorage()
+  }
+
   #checkpointCount = jsonCurrentWritable(0)
   checkpointCount = jsonCurrentReadable(this.#checkpointCount)
 
   #finishCount = jsonCurrentWritable(0)
   finishCount = jsonCurrentReadable(this.#finishCount)
+
+  public canBeValidated = derived(this.finishCount, (finishCount) => {
+    return finishCount > 0
+  })
+
+  public canBeSaved = derived(
+    [this.trackName, this.authorName, this.validated],
+    ([trackName, authorName, validated]) => {
+      return trackName.length > 0 && authorName.length > 0 && validated
+    }
+  )
 
   public static createEmpty() {
     return new TrackData()

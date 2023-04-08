@@ -20,8 +20,13 @@
   import SaveTrack from './UI/SaveTrack.svelte'
   import TrackDetails from './UI/TrackDetails.svelte'
   import { createTrackEditorContext } from './context'
+  import StartTrackValidation from './UI/StartTrackValidation.svelte'
+  import { gameState } from '../../stores/app'
+  import Car from '../../Car/Car.svelte'
 
   export let trackData: TrackData
+
+  const { state } = gameState.trackEditor
 
   interactivity()
 
@@ -61,29 +66,38 @@
   })
 </script>
 
-<UiWrapper>
-  {#if !$currentlySelectedElement}
-    <AddElement />
-  {:else}
-    <div class="absolute top-0 right-0">
-      {#key $currentlySelectedElement.id}
-        <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
-      {/key}
-    </div>
-    <ReplaceWithElement />
-    <DuplicateElement />
-    <RemoveElement />
-  {/if}
-  <SaveTrack />
-  <TrackDetails />
-</UiWrapper>
+{#if $state === 'editing'}
+  <UiWrapper>
+    {#if !$currentlySelectedElement}
+      <AddElement />
+    {:else}
+      <div class="absolute top-0 right-0">
+        {#key $currentlySelectedElement.id}
+          <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
+        {/key}
+      </div>
+      <ReplaceWithElement />
+      <DuplicateElement />
+      <RemoveElement />
+    {/if}
+    <StartTrackValidation />
+    <SaveTrack />
+    <TrackDetails />
+  </UiWrapper>
+{/if}
 
-<TrackState {trackData}>
+<TrackState
+  {trackData}
+  on:trackcomplete={() => {
+    trackData.setValidated(true)
+  }}
+>
   <TrackViewer
     {trackData}
     let:trackElement
   >
     <TrackEditorElementTransformControls {trackElement} />
+
     <TrackElementTransform
       reactive
       {trackElement}
@@ -104,9 +118,13 @@
   </TrackViewer>
 </TrackState>
 
-<T.PerspectiveCamera
-  makeDefault
-  position={[30, 30, 30]}
->
-  <OrbitControls />
-</T.PerspectiveCamera>
+{#if $state === 'editing'}
+  <T.PerspectiveCamera
+    makeDefault
+    position={[30, 30, 30]}
+  >
+    <OrbitControls />
+  </T.PerspectiveCamera>
+{:else if $state === 'validating'}
+  <Car active />
+{/if}

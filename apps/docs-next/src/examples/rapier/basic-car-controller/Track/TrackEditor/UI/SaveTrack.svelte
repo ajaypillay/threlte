@@ -3,6 +3,7 @@
   import { useTrackEditor } from '../context'
 
   const { trackData } = useTrackEditor()
+  const { canBeSaved } = trackData
 
   // export trackData
   const onClick = () => {
@@ -12,5 +13,6 @@
 
 <Button
   size="small"
+  disabled={!$canBeSaved}
   on:click={onClick}>Save Track</Button
 >
