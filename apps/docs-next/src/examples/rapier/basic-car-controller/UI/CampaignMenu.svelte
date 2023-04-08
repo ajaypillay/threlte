@@ -41,7 +41,9 @@
     {#each trackIds as trackId}
       <Button
         on:click={() => {
-          actions.startTimeAttack(trackId)
+          actions.loadTrackDataFromServer(trackId, () => {
+            actions.startTimeAttack()
+          })
         }}
       >
         {trackId}

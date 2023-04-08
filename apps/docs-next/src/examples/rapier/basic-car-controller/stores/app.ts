@@ -1,5 +1,6 @@
 import type { CurrentWritable } from '@threlte/core'
 import { buildActions, createState, toCurrentReadable } from './utils'
+import { TrackData } from '../Track/TrackData/TrackData'
 
 /**
  * -----------------------------------------------------
@@ -28,14 +29,14 @@ type GameType = 'time-attack' | 'track-editor'
 
 type GameState = {
   readonly gameType: CurrentWritable<GameType>
-  readonly trackId: CurrentWritable<string>
+  readonly trackData: CurrentWritable<TrackData | undefined>
   readonly paused: CurrentWritable<boolean>
   readonly timeAttack: {
-    readonly state: CurrentWritable<'loading' | 'track-intro' | 'count-in' | 'playing' | 'finished'>
+    readonly state: CurrentWritable<'track-intro' | 'count-in' | 'playing' | 'finished'>
     readonly time: CurrentWritable<number>
   }
   readonly trackEditor: {
-    readonly state: CurrentWritable<'loading' | 'editing' | 'validating' | 'finished'>
+    readonly state: CurrentWritable<'editing' | 'validating' | 'finished'>
     readonly editorView: CurrentWritable<'car' | 'orbit'>
   }
 }
@@ -83,15 +84,15 @@ export const menuState = {
  */
 const _gameState: GameState = {
   gameType: createState('time-attack'),
-  trackId: createState('a-1'),
+  trackData: createState(undefined),
   paused: createState(false),
   timeAttack: {
     time: createState(0),
-    state: createState('loading')
+    state: createState('track-intro')
   },
   trackEditor: {
     editorView: createState('orbit'),
-    state: createState('loading')
+    state: createState('editing')
   }
 }
 
@@ -100,7 +101,7 @@ const _gameState: GameState = {
  */
 export const gameState = {
   gameType: toCurrentReadable(_gameState.gameType),
-  trackId: toCurrentReadable(_gameState.trackId),
+  trackData: toCurrentReadable(_gameState.trackData),
   paused: toCurrentReadable(_gameState.paused),
   timeAttack: {
     time: toCurrentReadable(_gameState.timeAttack.time),
@@ -171,25 +172,40 @@ export const actions = buildActions(
      * as possible and reasonable.
      */
 
+    loadTrackDataFromServer: async (trackId: string, callback: () => void) => {
+      _appState.state.set('game')
+      _gameState.trackData.set(undefined)
+      const trackData = await TrackData.fromServer(trackId)
+      _gameState.trackData.set(trackData)
+      callback()
+    },
+
+    loadTrackDataFromLocalStorage: (trackId: string, callback: () => void) => {
+      _appState.state.set('game')
+      _gameState.trackData.set(undefined)
+      const trackData = TrackData.fromLocalStorage(trackId)
+      _gameState.trackData.set(trackData)
+      callback()
+    },
+
+    loadEmptyTrackData: (callback: () => void) => {
+      _appState.state.set('game')
+      const trackData = TrackData.createEmpty()
+      _gameState.trackData.set(trackData)
+      callback()
+    },
+
     /**
      * ++++++++++++++++++++++++++++++++
      * Time Attack Actions
      * ++++++++++++++++++++++++++++++++
      */
-    startTimeAttack: (trackId: string) => {
+    startTimeAttack: () => {
       _appState.state.set('game')
-      _gameState.trackId.set(trackId)
       _gameState.paused.set(false)
       _gameState.gameType.set('time-attack')
-      _gameState.timeAttack.state.set('loading')
-      _gameState.timeAttack.time.set(0)
-    },
-
-    timeAttackTrackLoaded: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.timeAttack.state.current !== 'loading') return false
-      if (_gameState.gameType.current !== 'time-attack') return false
       _gameState.timeAttack.state.set('track-intro')
+      _gameState.timeAttack.time.set(0)
     },
 
     timeAttackStartCountIn: () => {
@@ -257,19 +273,11 @@ export const actions = buildActions(
      * ++++++++++++++++++++++++++++++++
      */
 
-    startTrackEditor: (trackId: string) => {
+    startTrackEditor: () => {
       _appState.state.set('game')
-      _gameState.trackId.set(trackId)
       _gameState.paused.set(false)
       _gameState.gameType.set('track-editor')
       _gameState.trackEditor.editorView.set('orbit')
-      _gameState.trackEditor.state.set('loading')
-    },
-
-    trackEditorTrackLoaded: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.trackEditor.state.current !== 'loading') return false
-      if (_gameState.gameType.current !== 'track-editor') return false
       _gameState.trackEditor.state.set('editing')
     },
 
@@ -277,6 +285,13 @@ export const actions = buildActions(
       if (_appState.state.current !== 'game') return false
       if (_gameState.gameType.current !== 'track-editor') return false
       _gameState.trackEditor.editorView.set(view)
+    },
+
+    startTrackValidation: () => {
+      if (_appState.state.current !== 'game') return false
+      if (_gameState.gameType.current !== 'track-editor') return false
+      _gameState.paused.set(false)
+      _gameState.trackEditor.state.set('validating')
     },
 
     pauseGame: () => {

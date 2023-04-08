@@ -33,7 +33,7 @@ export const toCurrentReadable = <T>(
   current: T
 } => store
 
-type ActionReturn = void | false | { debug?: boolean }
+type ActionReturn = void | false | { debug?: boolean } | Promise<ActionReturn>
 
 /**
  * Build actions from a record of functions.
@@ -62,8 +62,8 @@ export const buildActions = <Actions extends Record<string, (...args: any[]) => 
 
   const proxyActions = keys.reduce((acc, key) => {
     const action = actions[key]!
-    acc[key] = ((...args: any[]) => {
-      const rt = action(...(args as []))
+    acc[key] = (async (...args: any[]) => {
+      const rt = await action(...(args as []))
 
       // The action is voided if it returns false
       if (rt === false) return

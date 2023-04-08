@@ -1,36 +1,26 @@
 <script lang="ts">
-  import { T } from '@threlte/core'
   import { derived } from 'svelte/store'
   import Car from '../Car/Car.svelte'
-  import LoadEvent from '../Track/LoadEvent.svelte'
   import TrackState from '../Track/TrackState.svelte'
   import TrackElement from '../Track/TrackViewer/TrackElement.svelte'
   import TrackElementTransform from '../Track/TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../Track/TrackViewer/TrackViewer.svelte'
-  import LoadingUi from '../UI/LoadingUi.svelte'
   import { actions, appState, gameState } from '../stores/app'
   import { useKeyDown } from '../useKeyDown'
   import { useKeyPress } from '../useKeyPress'
   // UI
-  import { TrackData } from '../Track/TrackData/TrackData'
+  import type { TrackData } from '../Track/TrackData/TrackData'
   import CountIn from './UI/CountIn.svelte'
   import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
   import TimeAttackUi from './UI/TimeAttackUi.svelte'
   import TrackIntro from './UI/TrackIntro.svelte'
+  import GamePauseMenu from '../UI/GamePauseMenu.svelte'
+
+  export let trackData: TrackData
 
   const { visibility } = appState
-  const { trackId, timeAttack, paused } = gameState
+  const { timeAttack, paused } = gameState
   const { state } = timeAttack
-
-  $: showTrack = $state !== 'loading'
-
-  const getTrackData = async (): Promise<TrackData> => {
-    const text = await import(`../Track/tracks/${$trackId}.json?raw`)
-    if (!text.default) throw new Error('Track not found')
-    const trackData = TrackData.fromJSON(text.default)
-    if (!trackData) throw new Error('Track not found')
-    return trackData
-  }
 
   const showCountIn = derived([state, paused], ([state, paused]) => {
     if (state !== 'count-in') return false
@@ -78,12 +68,8 @@
 </script>
 
 <!-- UI -->
-{#if !showTrack}
-  <LoadingUi />
-{/if}
-
 {#if $showTrackIntro}
-  <TrackIntro trackId={$trackId} />
+  <TrackIntro />
 {/if}
 
 {#if $showCountIn}
@@ -102,33 +88,28 @@
   <TimeAttackFinished />
 {/if}
 
-<!-- 3D -->
-<T.Group visible={showTrack}>
-  {#await getTrackData() then trackData}
-    <LoadEvent
-      on:trackloaded={() => {
-        actions.timeAttackTrackLoaded()
-      }}
-    />
-    <TrackState
-      {trackData}
-      on:trackcomplete={() => {
-        actions.timeAttackFinish()
-      }}
-    >
-      <TrackViewer
-        let:trackElement
-        {trackData}
-      >
-        <TrackElementTransform {trackElement}>
-          <TrackElement {trackElement} />
-        </TrackElementTransform>
-      </TrackViewer>
-    </TrackState>
-  {/await}
+{#if $paused}
+  <GamePauseMenu />
+{/if}
 
-  <Car
-    active={$carActive}
-    volume={$carVolume}
-  />
-</T.Group>
+<!-- 3D -->
+<TrackState
+  {trackData}
+  on:trackcomplete={() => {
+    actions.timeAttackFinish()
+  }}
+>
+  <TrackViewer
+    let:trackElement
+    {trackData}
+  >
+    <TrackElementTransform {trackElement}>
+      <TrackElement {trackElement} />
+    </TrackElementTransform>
+  </TrackViewer>
+</TrackState>
+
+<Car
+  active={$carActive}
+  volume={$carVolume}
+/>

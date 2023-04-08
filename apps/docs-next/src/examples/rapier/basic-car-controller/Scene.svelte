@@ -10,7 +10,6 @@
   import { appState } from './stores/app'
   import { useKeyPress } from './useKeyPress'
   import NewGame from './NewGame.svelte'
-  import { TrackData } from './Track/TrackData/TrackData'
 
   const { state, visibility } = appState
 

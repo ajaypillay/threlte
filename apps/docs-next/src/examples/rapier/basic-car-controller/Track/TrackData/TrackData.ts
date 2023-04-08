@@ -85,7 +85,7 @@ class TrialTrackRespawns {
 }
 
 export class TrackData {
-  trackId: string = Math.random().toString(36).substring(2, 9)
+  trackId: string = `Track-${Math.random().toString(36).substring(2, 9)}`
   trackName: JsonCurrentWritable<string> = jsonCurrentWritable('')
   authorName: JsonCurrentWritable<string> = jsonCurrentWritable('')
 
@@ -106,6 +106,14 @@ export class TrackData {
 
   public static createEmpty() {
     return new TrackData()
+  }
+
+  public static async fromServer(trackId: string) {
+    const text = await import(`../../Track/tracks/${trackId}.json?raw`)
+    if (!text.default) throw new Error('Track not found')
+    const trackData = TrackData.fromJSON(text.default)
+    if (!trackData) throw new Error('Track not found')
+    return trackData
   }
 
   public static fromJSON(json: string) {
@@ -176,6 +184,11 @@ export class TrackData {
     }
   }
 
+  public static listLocalStorageTrackIds() {
+    const localStorageKeys = Object.keys(localStorage)
+    return localStorageKeys.filter((key) => key.startsWith('Track-'))
+  }
+
   public export() {
     if (!this.#validated.current) {
       console.warn('Cannot export unvalidated track!')
@@ -203,6 +216,7 @@ export class TrackData {
       return trackElements
     })
     this.updateCheckpointCount()
+    this.toLocalStorage()
     return newTrackElement
   }
 
@@ -215,6 +229,7 @@ export class TrackData {
       return trackElements.filter((trackElement) => trackElement.id !== id)
     })
     this.updateCheckpointCount()
+    this.toLocalStorage()
   }
 
   public duplicateTrackElement(id: string) {
@@ -235,6 +250,7 @@ export class TrackData {
       return trackElements
     })
     this.updateCheckpointCount()
+    this.toLocalStorage()
     return newTrackElement
   }
 
@@ -251,6 +267,7 @@ export class TrackData {
       return trackElements
     })
     this.updateCheckpointCount()
+    this.toLocalStorage()
   }
 
   public setTrackElementPosition = (id: string, position: Vector3Tuple) => {
@@ -265,6 +282,7 @@ export class TrackData {
       }
       return trackElements
     })
+    this.toLocalStorage()
   }
 
   public setTrackElementRotation = (
@@ -282,5 +300,6 @@ export class TrackData {
       }
       return trackElements
     })
+    this.toLocalStorage()
   }
 }
