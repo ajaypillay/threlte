@@ -21,7 +21,8 @@
   import type { TrackData } from './types'
   import { derived } from 'svelte/store'
 
-  const { trackState, gameType, paused } = gameState
+  const { gameType, paused, timeAttack } = gameState
+  const { state } = timeAttack
 
   export let trackData: TrackData
 
@@ -87,7 +88,7 @@
 
   useFrame((_, delta) => {
     if ($gameType !== 'time-attack') return
-    if ($trackState !== 'playing') return
+    if ($state !== 'playing') return
     if ($paused) return
     actions.incrementTimeAttackTime(delta * 1000)
   })

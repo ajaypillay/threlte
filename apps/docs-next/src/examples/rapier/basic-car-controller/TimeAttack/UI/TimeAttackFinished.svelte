@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { actions } from '../stores/app'
-  import { getters } from '../stores/getters'
-  import UiWrapper from './UiWrapper.svelte'
+  import UiWrapper from '../../UI/UiWrapper.svelte'
+  import { actions } from '../../stores/app'
+  import { getters } from '../../stores/getters'
 
   const { formattedTime } = getters.timeAttack
 </script>

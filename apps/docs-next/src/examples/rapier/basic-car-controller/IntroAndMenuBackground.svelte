@@ -8,8 +8,8 @@
   import { DEG2RAD } from 'three/src/math/MathUtils'
   import CameraFade from './CameraFade.svelte'
   import HalfBox from './Track/Elements/HalfBox.svelte'
-  import MuscleCar from './MuscleCar.svelte'
-  import MuscleCarWheel from './MuscleCarWheel.svelte'
+  import MuscleCar from './Car/Models/MuscleCar.svelte'
+  import MuscleCarWheel from './Car/Models/MuscleCarWheel.svelte'
   import { actions, appState } from './stores/app'
 
   const { state } = appState

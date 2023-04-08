@@ -3,7 +3,7 @@
   context="module"
 >
   export const useTrackElement = () => {
-    return getContext<TrackElement>('track-element')
+    return getContext<TrackElement | undefined>('track-element')
   }
 </script>
 

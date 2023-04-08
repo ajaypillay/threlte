@@ -17,10 +17,10 @@
   import { spring } from 'svelte/motion'
   import { Group, Quaternion, Vector3 } from 'three'
   import { clamp, lerp, mapLinear } from 'three/src/math/MathUtils'
-  import Impulse from './Impulse.svelte'
-  import type { CarState } from './types'
-  import { useArrowKeys } from './useArrowKeys'
-  import { add, fromAToB, length, normalize } from './vectorUtils'
+  import Impulse from '../Impulse.svelte'
+  import type { CarState } from '../types'
+  import { useArrowKeys } from '../useArrowKeys'
+  import { add, fromAToB, length, normalize } from '../vectorUtils'
 
   export let active = true
   export let volume = 1

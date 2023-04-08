@@ -4,15 +4,15 @@
   import { derived } from 'svelte/store'
   import { PerspectiveCamera, Quaternion, Vector3 } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
-  import Car from './Car.svelte'
-  import CountIn from './CountIn.svelte'
+  import Car from './Car/Car.svelte'
+  import CountIn from './TimeAttack/CountIn.svelte'
   import Track from './Track/Track.svelte'
-  import MuscleCar from './MuscleCar.svelte'
+  import MuscleCar from './Car/Models/MuscleCar.svelte'
   import MuscleCarWheel from './MuscleCarWheel.svelte'
   import GamePauseMenu from './UI/GamePauseMenu.svelte'
   import TrackIntroMenu from './UI/TrackIntroMenu.svelte'
-  import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
-  import TimeAttackUi from './UI/TimeAttackUi.svelte'
+  import TimeAttackFinished from './TimeAttack/TimeAttackFinished.svelte'
+  import TimeAttackUi from './TimeAttack/TimeAttackUi.svelte'
   import { actions, appState, gameState } from './stores/app'
   import { useKeyDown } from './useKeyDown'
   import { useKeyPress } from './useKeyPress'
@@ -20,7 +20,7 @@
   import { sunPos } from './config'
 
   const { gameType, trackState, trackEditor, paused, trackId } = gameState
-  const { view } = trackEditor
+  const { editorView: view } = trackEditor
   const { visibility, debug } = appState
 
   useKeyPress('Enter', () => {

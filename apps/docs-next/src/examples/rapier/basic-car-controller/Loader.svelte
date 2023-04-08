@@ -13,8 +13,8 @@
   import { preloadRamp } from './Track/Elements/Ramp.svelte'
   import { preloadRampInverse } from './Track/Elements/RampInverse.svelte'
   import { preloadSlope } from './Track/Elements/Slope.svelte'
-  import { preloadMuscleCar } from './MuscleCar.svelte'
-  import { preloadMuscleCarWheel } from './MuscleCarWheel.svelte'
+  import { preloadMuscleCar } from './Car/Models/MuscleCar.svelte'
+  import { preloadMuscleCarWheel } from './Car/Models/MuscleCarWheel.svelte'
   import LoadingUi from './UI/LoadingUi.svelte'
 
   const preload = () => {

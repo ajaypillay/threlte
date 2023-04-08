@@ -1,18 +1,15 @@
 <script lang="ts">
-  import { currentWritable, useFrame, useRender, useThrelte } from '@threlte/core'
+  import { useFrame, useRender, useThrelte } from '@threlte/core'
   import { AudioListener } from '@threlte/extras'
   import Stats from 'stats.js'
   import { tick } from 'svelte'
   import { derived } from 'svelte/store'
   import Env from './Env.svelte'
-  import Game from './Game.svelte'
   import IntroAndMenuBackground from './IntroAndMenuBackground.svelte'
   import Menu from './Menu.svelte'
   import { appState } from './stores/app'
   import { useKeyPress } from './useKeyPress'
-  import TrackViewer from './Track/TrackViewer/TrackViewer.svelte'
-  import { jsonCurrentWritable } from './Track/jsonCurrentWritable'
-  import Test from './Track/TrackEditor/Test.svelte'
+  import NewGame from './NewGame.svelte'
 
   const { state, visibility } = appState
 
@@ -62,14 +59,12 @@
 <!-- All scenes use the same environment -->
 <Env />
 
-<!-- {#if $state === 'intro' || $state === 'menu'}
+{#if $state === 'intro' || $state === 'menu'}
   <IntroAndMenuBackground />
 {/if}
 
 {#if $state === 'menu'}
   <Menu />
 {:else if $state === 'game'}
-  <Game />
-{/if} -->
-
-<Test />
+  <NewGame />
+{/if}

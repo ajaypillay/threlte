@@ -5,12 +5,16 @@ import { tick } from 'svelte'
 export const useRefreshCollider = () => {
   let refreshFns: any[] = []
 
-  const { position, rotation } = useTrackElement()
+  const trackElement = useTrackElement()
 
-  watch([position, rotation], async () => {
-    await tick()
-    refreshFns.forEach((fn) => fn())
-  })
+  if (trackElement) {
+    const { position, rotation } = trackElement
+
+    watch([position, rotation], async () => {
+      await tick()
+      refreshFns.forEach((fn) => fn())
+    })
+  }
 
   return {
     refreshFns

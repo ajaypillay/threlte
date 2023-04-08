@@ -25,17 +25,18 @@ type MenuState = {
 }
 
 type GameType = 'time-attack' | 'track-editor'
-type TrackState = 'loading-track' | 'track-intro' | 'count-in' | 'playing' | 'finished'
+
 type GameState = {
-  readonly trackId: CurrentWritable<string>
   readonly gameType: CurrentWritable<GameType>
-  readonly trackState: CurrentWritable<TrackState>
+  readonly trackId: CurrentWritable<string>
   readonly paused: CurrentWritable<boolean>
   readonly timeAttack: {
+    readonly state: CurrentWritable<'loading' | 'track-intro' | 'count-in' | 'playing' | 'finished'>
     readonly time: CurrentWritable<number>
   }
   readonly trackEditor: {
-    readonly view: CurrentWritable<'game' | 'editor'>
+    readonly state: CurrentWritable<'loading' | 'editing' | 'validating' | 'finished'>
+    readonly editorView: CurrentWritable<'car' | 'orbit'>
   }
 }
 
@@ -81,15 +82,16 @@ export const menuState = {
  * -----------------------------------------------------
  */
 const _gameState: GameState = {
-  trackState: createState('loading-track'),
   gameType: createState('time-attack'),
-  trackId: createState('track-1'),
+  trackId: createState('a-1'),
   paused: createState(false),
   timeAttack: {
-    time: createState(0)
+    time: createState(0),
+    state: createState('loading')
   },
   trackEditor: {
-    view: createState('editor')
+    editorView: createState('orbit'),
+    state: createState('loading')
   }
 }
 
@@ -97,15 +99,16 @@ const _gameState: GameState = {
  * Immutable game state
  */
 export const gameState = {
-  trackState: toCurrentReadable(_gameState.trackState),
   gameType: toCurrentReadable(_gameState.gameType),
   trackId: toCurrentReadable(_gameState.trackId),
   paused: toCurrentReadable(_gameState.paused),
   timeAttack: {
-    time: toCurrentReadable(_gameState.timeAttack.time)
+    time: toCurrentReadable(_gameState.timeAttack.time),
+    state: toCurrentReadable(_gameState.timeAttack.state)
   },
   trackEditor: {
-    view: toCurrentReadable(_gameState.trackEditor.view)
+    editorView: toCurrentReadable(_gameState.trackEditor.editorView),
+    state: toCurrentReadable(_gameState.trackEditor.state)
   }
 }
 
@@ -168,52 +171,46 @@ export const actions = buildActions(
      * as possible and reasonable.
      */
 
+    /**
+     * ++++++++++++++++++++++++++++++++
+     * Time Attack Actions
+     * ++++++++++++++++++++++++++++++++
+     */
     startTimeAttack: (trackId: string) => {
       _appState.state.set('game')
-      _gameState.trackState.set('loading-track')
       _gameState.trackId.set(trackId)
       _gameState.paused.set(false)
       _gameState.gameType.set('time-attack')
+      _gameState.timeAttack.state.set('loading')
       _gameState.timeAttack.time.set(0)
     },
 
-    startTrackEditor: (trackId: string) => {
-      _appState.state.set('game')
-      _gameState.trackState.set('loading-track')
-      _gameState.trackId.set(trackId)
-      _gameState.paused.set(false)
-      _gameState.gameType.set('track-editor')
-      _gameState.trackEditor.view.set('editor')
+    timeAttackTrackLoaded: () => {
+      if (_appState.state.current !== 'game') return false
+      if (_gameState.timeAttack.state.current !== 'loading') return false
+      if (_gameState.gameType.current !== 'time-attack') return false
+      _gameState.timeAttack.state.set('track-intro')
     },
 
-    trackLoaded: () => {
+    timeAttackStartCountIn: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.trackState.current !== 'loading-track') return false
-      _gameState.trackState.set('track-intro')
+      if (_gameState.timeAttack.state.current !== 'track-intro') return false
+      if (_gameState.gameType.current !== 'time-attack') return false
+      _gameState.timeAttack.state.set('count-in')
     },
 
-    startCountIn: () => {
+    timeAttackStartPlaying: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.trackState.current !== 'track-intro') return false
-      _gameState.trackState.set('count-in')
+      if (_gameState.timeAttack.state.current !== 'count-in') return false
+      if (_gameState.gameType.current !== 'time-attack') return false
+      _gameState.timeAttack.state.set('playing')
     },
 
-    /**
-     * The count-in is finished, the user takes control of the car.
-     */
-    startGamePlay: () => {
+    timeAttackFinish: () => {
       if (_appState.state.current !== 'game') return false
-      if (_gameState.trackState.current !== 'count-in') return false
-      _gameState.trackState.set('playing')
-    },
-
-    /**
-     * The track is finished, the user may restart the track.
-     */
-    trackFinished: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.trackState.current !== 'playing') return false
-      _gameState.trackState.set('finished')
+      if (_gameState.timeAttack.state.current !== 'playing') return false
+      if (_gameState.gameType.current !== 'time-attack') return false
+      _gameState.timeAttack.state.set('finished')
     },
 
     /**
@@ -224,7 +221,7 @@ export const actions = buildActions(
     incrementTimeAttackTime: (time: number) => {
       if (_appState.state.current !== 'game') return false
       if (_gameState.gameType.current !== 'time-attack') return false
-      if (_gameState.trackState.current !== 'playing') return false
+      if (_gameState.timeAttack.state.current !== 'playing') return false
       if (_gameState.paused.current) return false
       _gameState.timeAttack.time.update((t) => t + time)
       return { debug: false }
@@ -236,7 +233,7 @@ export const actions = buildActions(
      */
     resetTimeAttack: () => {
       if (_appState.state.current !== 'game') return false
-      _gameState.trackState.set('track-intro')
+      _gameState.timeAttack.state.set('track-intro')
       _gameState.timeAttack.time.set(0)
     },
 
@@ -247,20 +244,39 @@ export const actions = buildActions(
     softResetTimeAttack: () => {
       if (_appState.state.current !== 'game') return false
       // a soft reset can only be done while playing
-      if (_gameState.trackState.current !== 'playing') return false
+      if (_gameState.timeAttack.state.current !== 'playing') return false
       // and not while paused
       if (_gameState.paused.current) return false
-      _gameState.trackState.set('count-in')
+      _gameState.timeAttack.state.set('count-in')
       _gameState.timeAttack.time.set(0)
     },
 
-    setTrackEditorView: (view: 'game' | 'editor') => {
+    /**
+     * ++++++++++++++++++++++++++++++++
+     * Track Editor Actions
+     * ++++++++++++++++++++++++++++++++
+     */
+
+    startTrackEditor: (trackId: string) => {
+      _appState.state.set('game')
+      _gameState.trackId.set(trackId)
+      _gameState.paused.set(false)
+      _gameState.gameType.set('track-editor')
+      _gameState.trackEditor.editorView.set('orbit')
+      _gameState.trackEditor.state.set('loading')
+    },
+
+    trackEditorTrackLoaded: () => {
+      if (_appState.state.current !== 'game') return false
+      if (_gameState.trackEditor.state.current !== 'loading') return false
+      if (_gameState.gameType.current !== 'track-editor') return false
+      _gameState.trackEditor.state.set('editing')
+    },
+
+    setTrackEditorView: (view: 'orbit' | 'car') => {
       if (_appState.state.current !== 'game') return false
       if (_gameState.gameType.current !== 'track-editor') return false
-      if (view === 'game') {
-        _gameState.trackState.set('playing')
-      }
-      _gameState.trackEditor.view.set(view)
+      _gameState.trackEditor.editorView.set(view)
     },
 
     pauseGame: () => {
