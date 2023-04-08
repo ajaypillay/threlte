@@ -48,11 +48,12 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
 
   const { paused } = gameState
 
-  const { id } = useTrackElement()
+  const trackElement = useTrackElement()
+
   const { registerCheckpointReached, checkpointsReached } = useTrackState()
 
   const checkpointReached = derived(checkpointsReached, (checkpointsReached) => {
-    return checkpointsReached.has(id)
+    return trackElement && checkpointsReached.has(trackElement.id)
   })
 
   let signMesh: Mesh
@@ -143,7 +144,8 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
           args={[5, 2.5, 5]}
           bind:refresh={refreshFns[2]}
           on:sensorenter={() => {
-            registerCheckpointReached(id)
+            if (!trackElement) return
+            registerCheckpointReached(trackElement.id)
           }}
           sensor
         />

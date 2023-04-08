@@ -8,7 +8,7 @@
 -->
 <script lang="ts">
   import { T } from '@threlte/core'
-  import type { TrackElement } from '../types'
+  import type { TrackElement } from '../TrackData/TrackData'
 
   export let trackElement: TrackElement
   export let reactive = false

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { interactivity } from '@threlte/extras'
+  import { OrbitControls, interactivity } from '@threlte/extras'
   import UiWrapper from '../../UI/UiWrapper.svelte'
   import { useKeyDown } from '../../useKeyDown'
   import { useKeyUp } from '../../useKeyUp'
@@ -7,7 +7,6 @@
   import TrackElement from '../TrackViewer/TrackElement.svelte'
   import TrackElementTransform from '../TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../TrackViewer/TrackViewer.svelte'
-  import type { TrackData } from '../types'
   import TrackEditorElementSelection from './TrackEditorElementSelection.svelte'
   import TrackEditorElementSelector from './TrackEditorElementSelector.svelte'
   import TrackEditorElementTransformControls from './TrackEditorElementTransformControls.svelte'
@@ -19,9 +18,10 @@
   import SaveTrack from './UI/SaveTrack.svelte'
   import TrackDetails from './UI/TrackDetails.svelte'
   import { createTrackEditorContext } from './context'
-  import { trackDataUtils } from './utils/trackDataUtils'
+  import { TrackData } from '../TrackData/TrackData'
+  import { T } from '@threlte/core'
 
-  export let trackData: TrackData
+  export let trackData = TrackData.createEmpty()
 
   interactivity()
 
@@ -45,12 +45,12 @@
   })
   useKeyDown('Shift+D', () => {
     if (!$currentlySelectedElement) return
-    const newElement = trackDataUtils.duplicateElement(trackData, $currentlySelectedElement.id)
+    const newElement = trackData.duplicateTrackElement($currentlySelectedElement.id)
     currentlySelectedElement.set(newElement)
   })
   useKeyDown('Control+Backspace', () => {
     if (!$currentlySelectedElement) return
-    trackDataUtils.removeElement(trackData, $currentlySelectedElement.id)
+    trackData.removeTrackElement($currentlySelectedElement.id)
     currentlySelectedElement.set(undefined)
   })
   useKeyDown('Shift', () => {
@@ -103,3 +103,10 @@
     </TrackElementTransform>
   </TrackViewer>
 </TrackState>
+
+<T.PerspectiveCamera
+  makeDefault
+  position={[30, 30, 30]}
+>
+  <OrbitControls />
+</T.PerspectiveCamera>

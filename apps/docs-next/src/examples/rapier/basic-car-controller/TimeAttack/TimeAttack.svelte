@@ -1,24 +1,22 @@
 <script lang="ts">
   import { T } from '@threlte/core'
-  import { trackDataUtils } from '../Track/TrackEditor/utils/trackDataUtils'
+  import { derived } from 'svelte/store'
+  import Car from '../Car/Car.svelte'
+  import LoadEvent from '../Track/LoadEvent.svelte'
   import TrackState from '../Track/TrackState.svelte'
   import TrackElement from '../Track/TrackViewer/TrackElement.svelte'
   import TrackElementTransform from '../Track/TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../Track/TrackViewer/TrackViewer.svelte'
-  import type { TrackData } from '../Track/types'
-  import { actions, appState, gameState } from '../stores/app'
-  import LoadEvent from '../Track/LoadEvent.svelte'
   import LoadingUi from '../UI/LoadingUi.svelte'
-  import { derived } from 'svelte/store'
-  import Car from '../Car/Car.svelte'
-  import { useKeyPress } from '../useKeyPress'
+  import { actions, appState, gameState } from '../stores/app'
   import { useKeyDown } from '../useKeyDown'
-
+  import { useKeyPress } from '../useKeyPress'
   // UI
-  import TrackIntro from './UI/TrackIntro.svelte'
+  import { TrackData } from '../Track/TrackData/TrackData'
   import CountIn from './UI/CountIn.svelte'
-  import TimeAttackUi from './UI/TimeAttackUi.svelte'
   import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
+  import TimeAttackUi from './UI/TimeAttackUi.svelte'
+  import TrackIntro from './UI/TrackIntro.svelte'
 
   const { visibility } = appState
   const { trackId, timeAttack, paused } = gameState
@@ -28,7 +26,10 @@
 
   const getTrackData = async (): Promise<TrackData> => {
     const text = await import(`../Track/tracks/${$trackId}.json?raw`)
-    return trackDataUtils.parseTrackData(text.default)
+    if (!text.default) throw new Error('Track not found')
+    const trackData = TrackData.fromJSON(text.default)
+    if (!trackData) throw new Error('Track not found')
+    return trackData
   }
 
   const showCountIn = derived([state, paused], ([state, paused]) => {

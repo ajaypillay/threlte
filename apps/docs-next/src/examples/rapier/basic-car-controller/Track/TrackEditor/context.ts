@@ -1,6 +1,6 @@
 import { CurrentWritable, currentWritable } from '@threlte/core'
-import type { TrackData, TrackElement } from '../types'
 import { getContext, setContext } from 'svelte'
+import type { TrackData, TrackElement } from '../TrackData/TrackData'
 
 type TrackEditorContext = {
   transformMode: CurrentWritable<'translate' | 'rotate'>

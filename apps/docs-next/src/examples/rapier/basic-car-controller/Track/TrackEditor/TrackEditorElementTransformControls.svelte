@@ -10,10 +10,9 @@
   import { TransformControls } from '@threlte/extras'
   import { derived } from 'svelte/store'
   import type { Group } from 'three'
-  import type { TrackElement } from '../types'
   import { useTrackEditor } from './context'
-  import { trackDataUtils } from './utils/trackDataUtils'
   import { onDestroy } from 'svelte'
+  import type { TrackElement } from '../TrackData/TrackData'
 
   export let trackElement: TrackElement
 
@@ -34,9 +33,9 @@
   })
 
   const onChange = (ref: Group) => {
-    trackDataUtils.updateElementPosition(trackData, trackElement.id, ref.position.toArray())
+    trackData.setTrackElementPosition(trackElement.id, ref.position.toArray())
     const rotation = ref.rotation.toArray() as TrackElement['rotation']['current']
-    trackDataUtils.updateElementRotation(trackData, trackElement.id, rotation)
+    trackData.setTrackElementRotation(trackElement.id, rotation)
   }
 
   const onMouseDown = () => {

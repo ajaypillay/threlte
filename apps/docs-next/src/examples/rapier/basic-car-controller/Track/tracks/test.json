@@ -1,55 +1,11 @@
 {
-  "trackId": "test",
-  "trackName": "test",
-  "authorName": "test",
-  "times": {
-    "author": 0,
-    "gold": 0,
-    "silver": 0,
-    "bronze": 0
-  },
-  "elements": [
-    {
-      "id": "mhzb2na",
-      "type": "Slope",
-      "position": [-6.523820083056003, -5.816850599534053, 10.436352712658277],
-      "rotation": [0, 1.9722220547535925, 0, "XYZ"]
-    },
-    {
-      "id": "k1i36lm",
-      "type": "Slope",
-      "position": [-10.729137562821865, 7, 0],
-      "rotation": [0, 0, 0, "XYZ"]
-    },
-    {
-      "id": "9nagh9d",
-      "type": "Box",
-      "position": [11.716694583026282, 0, -4.024494336127738],
-      "rotation": [0, 0, 0, "XYZ"]
-    },
-    {
-      "id": "7tzojd7",
-      "type": "Box",
-      "position": [0, 0, 10],
-      "rotation": [0.15692107953905066, -0.36163813332966804, 0.269885286193434, "XYZ"]
-    },
-    {
-      "id": "p6t00c3",
-      "type": "Checkpoint",
-      "position": [9.233101131769752, 0, -25.059986129193508],
-      "rotation": [0, 0, 0, "XYZ"]
-    },
-    {
-      "id": "hxnb7t0",
-      "type": "Finish",
-      "position": [0, 0, 0],
-      "rotation": [0, 0, 0, "XYZ"]
-    },
-    {
-      "id": "2ign95e",
-      "type": "Box",
-      "position": [4.1887363663744495, 0, -13.485447295689164],
-      "rotation": [-0.09268712168282006, 0.44123983173970077, -0.1486063369086837, "XYZ"]
-    }
-  ]
+  "trackId": "9kpkbs3",
+  "trackName": "",
+  "authorName": "",
+  "trackElements": [
+    { "id": "6o8wevj", "type": "Box", "position": [1, 0, 2], "rotation": [0, 0, 0, "XYZ"] }
+  ],
+  "timeAttackTrackTimes": { "author": 0, "gold": 0, "silver": 0, "bronze": 0 },
+  "trialTrackRespawns": { "author": 0, "gold": 0, "silver": 0, "bronze": 0 },
+  "validated": false
 }

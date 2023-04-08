@@ -1,13 +1,12 @@
 <script lang="ts">
   import Button from '../../../UI/components/Button.svelte'
   import { useTrackEditor } from '../context'
-  import { trackDataUtils } from '../utils/trackDataUtils'
 
   const { trackData, currentlySelectedElement } = useTrackEditor()
 
   const removeElement = () => {
     if (!$currentlySelectedElement) return
-    trackDataUtils.removeElement(trackData, $currentlySelectedElement.id)
+    trackData.removeTrackElement($currentlySelectedElement.id)
   }
 </script>
 

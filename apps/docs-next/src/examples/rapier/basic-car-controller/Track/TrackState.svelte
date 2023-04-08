@@ -18,36 +18,16 @@
 <script lang="ts">
   import { createEventDispatcher, getContext, setContext } from 'svelte'
   import { actions, gameState } from '../stores/app'
-  import type { TrackData } from './types'
-  import { derived } from 'svelte/store'
+  import type { TrackData } from './TrackData/TrackData'
 
   const { gameType, paused, timeAttack } = gameState
   const { state } = timeAttack
 
   export let trackData: TrackData
 
-  const checkpointCountDoubleReadable = derived(trackData.elements, (elements) => {
-    const typeStores = elements.map((element) => element.type)
-    return derived(typeStores, (types) => {
-      return types.filter((t) => t.startsWith('Checkpoint')).length
-    })
-  })
+  const { finishCount, checkpointCount } = trackData
 
-  $: checkpointCountReadable = $checkpointCountDoubleReadable
-  $: checkpointCount = $checkpointCountReadable
-
-  const finishCountDoubleReadable = derived(trackData.elements, (elements) => {
-    const typeStores = elements.map((element) => element.type)
-    const d = derived(typeStores, (types) => {
-      return types.filter((t) => t.startsWith('Finish')).length
-    })
-    return d
-  })
-
-  $: finishCountReadable = $finishCountDoubleReadable
-  $: finishCount = $finishCountReadable
-
-  $: if (finishCount < 1) console.warn('No finish found')
+  $: if ($finishCount < 1) console.warn('No finish found')
 
   const dispatch = createEventDispatcher<{
     trackcomplete: void
@@ -64,7 +44,7 @@
   }
 
   const registerFinishReached = () => {
-    if (checkpointsReached.current.size === checkpointCount) {
+    if (checkpointsReached.current.size === $checkpointCount) {
       dispatch('trackcomplete')
       trackComplete = true
     }

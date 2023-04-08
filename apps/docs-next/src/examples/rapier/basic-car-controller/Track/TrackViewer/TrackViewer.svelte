@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { TrackData } from '../types'
+  import type { TrackData } from '../TrackData/TrackData'
 
   export let trackData: TrackData
-  $: elements = trackData.elements
+  $: elements = trackData.trackElements
 </script>
 
 {#each $elements as element (element.id)}

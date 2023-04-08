@@ -34,7 +34,7 @@
 
   const { refreshFns } = useRefreshCollider()
 
-  const { id } = useTrackElement()
+  const trackElement = useTrackElement()
   const { registerCheckpointReached } = useTrackState()
 </script>
 
@@ -65,7 +65,8 @@
         shape="cylinder"
         args={[0.5, 4.5]}
         on:sensorenter={() => {
-          registerCheckpointReached(id)
+          if (!trackElement) return
+          registerCheckpointReached(trackElement.id)
         }}
         sensor
         bind:refresh={refreshFns[1]}

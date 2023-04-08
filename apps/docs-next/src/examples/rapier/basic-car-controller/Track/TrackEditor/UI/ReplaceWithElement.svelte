@@ -2,7 +2,6 @@
   import Button from '../../../UI/components/Button.svelte'
   import { trackElementPrototypes } from '../../Elements/elements'
   import { useTrackEditor } from '../context'
-  import { trackDataUtils } from '../utils/trackDataUtils'
 
   const { trackData, currentlySelectedElement } = useTrackEditor()
 </script>
@@ -13,7 +12,7 @@
       size="small"
       on:click={() => {
         if (!$currentlySelectedElement) return
-        trackDataUtils.updateElementType(trackData, $currentlySelectedElement.id, key)
+        trackData.setTrackElementType($currentlySelectedElement.id, key)
       }}
     >
       {value.buttonLabel}

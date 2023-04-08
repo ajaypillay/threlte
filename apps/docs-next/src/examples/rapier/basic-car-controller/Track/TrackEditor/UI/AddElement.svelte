@@ -2,7 +2,6 @@
   import Button from '../../../UI/components/Button.svelte'
   import { trackElementPrototypes } from '../../Elements/elements'
   import { useTrackEditor } from '../context'
-  import { trackDataUtils } from '../utils/trackDataUtils'
 
   const { trackData, currentlySelectedElement } = useTrackEditor()
 </script>
@@ -12,7 +11,7 @@
     <Button
       size="small"
       on:click={() => {
-        const newTrackElement = trackDataUtils.addElement(trackData, key)
+        const newTrackElement = trackData.addTrackElement(key)
         currentlySelectedElement.set(newTrackElement)
       }}
     >

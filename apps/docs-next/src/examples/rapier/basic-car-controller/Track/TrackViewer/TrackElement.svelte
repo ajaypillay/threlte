@@ -11,7 +11,7 @@
   import { getContext, setContext } from 'svelte'
 
   import { trackElementPrototypes } from '../Elements/elements'
-  import type { TrackElement } from '../types'
+  import type { TrackElement } from '../TrackData/TrackData'
 
   export let trackElement: TrackElement
 
