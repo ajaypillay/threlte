@@ -20,8 +20,7 @@
   import { actions, gameState } from '../stores/app'
   import type { TrackData } from './TrackData/TrackData'
 
-  const { gameType, paused, timeAttack } = gameState
-  const { state } = timeAttack
+  const { paused } = gameState
 
   export let trackData: TrackData
 
@@ -67,10 +66,8 @@
   }
 
   useFrame((_, delta) => {
-    if ($gameType !== 'time-attack') return
-    if ($state !== 'playing') return
     if ($paused) return
-    actions.incrementTimeAttackTime(delta * 1000)
+    actions.incrementGameTime(delta * 1000)
   })
 
   actions.use('softResetTimeAttack', resetTrackState)

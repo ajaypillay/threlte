@@ -1,8 +1,9 @@
 <script lang="ts">
-  import Button from '../../../UI/components/Button.svelte'
-  import { useTrackEditor } from '../context'
+  import Button from '../../../../UI/components/Button.svelte'
+  import { useTrackEditor } from '../../context'
 
   const { trackData, currentlySelectedElement } = useTrackEditor()
+  const validated = trackData.validated
 
   const duplicateElement = () => {
     if (!$currentlySelectedElement) return
@@ -12,6 +13,7 @@
 </script>
 
 <Button
+  disabled={$validated}
   size="small"
   on:click={duplicateElement}>Duplicate Element</Button
 >

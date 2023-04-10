@@ -11,7 +11,11 @@ const formatTime = (milliseconds: number): string => {
 }
 
 export const getters = {
-  timeAttack: {
-    formattedTime: derived(gameState.timeAttack.time, (time) => formatTime(time))
+  game: {
+    common: {
+      time: {
+        formattedTime: derived(gameState.common.time, (time) => formatTime(time))
+      }
+    }
   }
 }

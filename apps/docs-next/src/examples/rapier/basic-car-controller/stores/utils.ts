@@ -33,7 +33,7 @@ export const toCurrentReadable = <T>(
   current: T
 } => store
 
-type ActionReturn = void | false | { debug?: boolean } | Promise<ActionReturn>
+type ActionReturn = void | { debug?: boolean; invalid?: boolean | string } | Promise<ActionReturn>
 
 /**
  * Build actions from a record of functions.
@@ -63,26 +63,37 @@ export const buildActions = <Actions extends Record<string, (...args: any[]) => 
   const proxyActions = keys.reduce((acc, key) => {
     const action = actions[key]!
     acc[key] = (async (...args: any[]) => {
-      const rt = await action(...(args as []))
-
-      // The action is voided if it returns false
-      if (rt === false) return
+      const actionReturn = await action(...(args as []))
 
       // an action can define a debug flag
-      const rtDebug = typeof rt !== 'undefined' && typeof rt !== 'boolean' ? rt.debug : undefined
-      if (options?.debug && (rtDebug ?? true)) {
+      const rtDebug = actionReturn?.debug ?? true
+      const isInvalid = actionReturn?.invalid === true || typeof actionReturn?.invalid === 'string'
+
+      if (options?.debug && rtDebug) {
         const payload = args.map((a) => JSON.stringify(a))
         const actionName = String(key)
         const actionDesc = payload.length
           ? `${actionName}(${payload.join(', ')})`
           : `${actionName}()`
-        console.log(
-          `%c${` ACTION %c %c${actionDesc}`}`,
-          'color: white; background: blue;',
-          'background: transparent;',
-          'color: inherit;'
-        )
+        if (isInvalid) {
+          console.log(
+            `%c ACTION %c %c${actionDesc} (INVALID)`,
+            `color: white; background: red;`,
+            'background: transparent;',
+            'color: inherit;'
+          )
+        } else {
+          console.log(
+            `%c ACTION %c %c${actionDesc}`,
+            `color: white; background: blue;`,
+            'background: transparent;',
+            'color: inherit;'
+          )
+        }
       }
+
+      // The action is voided if it returns false
+      if (isInvalid) return
 
       // finally emit the event
       events.emit(key as keyof typeof actions)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useTrackEditor } from '../context'
+  import { useTrackEditor } from '../../context'
 
   const { trackData } = useTrackEditor()
 
@@ -16,7 +16,7 @@
     type="text"
     bind:value={$trackName}
   />
-  <label for="trackName">Track Name</label>
+  <label for="trackName">Author Name</label>
   <input
     class="pointer-events-auto"
     id="authorName"

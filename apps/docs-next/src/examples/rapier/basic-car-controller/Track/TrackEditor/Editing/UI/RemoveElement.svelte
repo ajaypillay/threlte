@@ -1,8 +1,9 @@
 <script lang="ts">
-  import Button from '../../../UI/components/Button.svelte'
-  import { useTrackEditor } from '../context'
+  import Button from '../../../../UI/components/Button.svelte'
+  import { useTrackEditor } from '../../context'
 
   const { trackData, currentlySelectedElement } = useTrackEditor()
+  const { validated } = trackData
 
   const removeElement = () => {
     if (!$currentlySelectedElement) return
@@ -11,6 +12,7 @@
 </script>
 
 <Button
+  disabled={$validated}
   size="small"
   on:click={removeElement}>Remove Element</Button
 >

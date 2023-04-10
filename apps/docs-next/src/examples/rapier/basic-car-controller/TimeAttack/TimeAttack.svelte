@@ -6,15 +6,15 @@
   import TrackElementTransform from '../Track/TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../Track/TrackViewer/TrackViewer.svelte'
   import { actions, appState, gameState } from '../stores/app'
-  import { useKeyDown } from '../useKeyDown'
   import { useKeyPress } from '../useKeyPress'
   // UI
   import type { TrackData } from '../Track/TrackData/TrackData'
-  import CountIn from './UI/CountIn.svelte'
+  import CountIn from '../UI/Common/CountIn.svelte'
+  import GamePauseMenu from '../UI/GamePauseMenu.svelte'
+  import { useGameIsPausable } from '../useGameIsPausable'
   import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
   import TimeAttackUi from './UI/TimeAttackUi.svelte'
   import TrackIntro from './UI/TrackIntro.svelte'
-  import GamePauseMenu from '../UI/GamePauseMenu.svelte'
 
   export let trackData: TrackData
 
@@ -62,9 +62,7 @@
     }
   })
 
-  useKeyDown('Escape', () => {
-    actions.toggleGamePaused()
-  })
+  useGameIsPausable()
 </script>
 
 <!-- UI -->
@@ -112,4 +110,5 @@
 <Car
   active={$carActive}
   volume={$carVolume}
+  freezeCamera={$state === 'finished'}
 />

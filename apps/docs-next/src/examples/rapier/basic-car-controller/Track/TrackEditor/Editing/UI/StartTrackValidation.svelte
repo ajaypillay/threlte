@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Button from '../../../UI/components/Button.svelte'
-  import { actions } from '../../../stores/app'
-  import { useTrackEditor } from '../context'
+  import Button from '../../../../UI/components/Button.svelte'
+  import { actions } from '../../../../stores/app'
+  import { useTrackEditor } from '../../context'
 
   const { trackData } = useTrackEditor()
 

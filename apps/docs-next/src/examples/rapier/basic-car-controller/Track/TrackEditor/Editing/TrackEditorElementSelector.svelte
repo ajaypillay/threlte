@@ -1,8 +1,8 @@
 <script lang="ts">
   import { T } from '@threlte/core'
-  import { useTrackEditor } from './context'
-  import type { TrackElement } from '../TrackData/TrackData'
-  import { gameState } from '../../stores/app'
+  import { useTrackEditor } from '../context'
+  import type { TrackElement } from '../../TrackData/TrackData'
+  import { gameState } from '../../../stores/app'
 
   export let trackElement: TrackElement
 
@@ -12,7 +12,7 @@
 
   const { validated } = trackData
 
-  $: if ($validated || $state === 'validating') {
+  $: if ($validated || $state === 'validation') {
     currentlySelectedElement.set(undefined)
   }
 

@@ -109,9 +109,12 @@ export class TrackData {
   #finishCount = jsonCurrentWritable(0)
   finishCount = jsonCurrentReadable(this.#finishCount)
 
-  public canBeValidated = derived(this.finishCount, (finishCount) => {
-    return finishCount > 0
-  })
+  public canBeValidated = derived(
+    [this.finishCount, this.trackName, this.authorName],
+    ([finishCount, trackName, authorName]) => {
+      return finishCount > 0 && trackName.length > 0 && authorName.length > 0
+    }
+  )
 
   public canBeSaved = derived(
     [this.trackName, this.authorName, this.validated],
@@ -205,7 +208,7 @@ export class TrackData {
     return localStorageKeys.filter((key) => key.startsWith('Track-'))
   }
 
-  public export() {
+  public saveTrackToDisk() {
     if (!this.#validated.current) {
       console.warn('Cannot export unvalidated track!')
       return

@@ -2,7 +2,7 @@
   import UiWrapper from '../../UI/UiWrapper.svelte'
   import { getters } from '../../stores/getters'
 
-  const { formattedTime } = getters.timeAttack
+  const { formattedTime } = getters.game.common.time
 </script>
 
 <UiWrapper>

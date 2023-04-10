@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DEG2RAD, RAD2DEG } from 'three/src/math/MathUtils'
-  import type { TrackElement } from '../../TrackData/TrackData'
-  import { useTrackEditor } from '../context'
+  import type { TrackElement } from '../../../TrackData/TrackData'
+  import { useTrackEditor } from '../../context'
 
   const { trackData } = useTrackEditor()
 

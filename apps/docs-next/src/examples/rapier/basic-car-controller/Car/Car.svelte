@@ -7,11 +7,16 @@
   import MuscleCarWheel from './Models/MuscleCarWheel.svelte'
   import { sunPos } from '../config'
   import { actions } from '../stores/app'
+  import { PerspectiveCamera, Quaternion, Vector3 } from 'three'
+
+  let carCam: PerspectiveCamera
+  let freezeCam: PerspectiveCamera
 
   let respawnCar: () => void
   export let debug = false
   export let active = false
   export let useCarCamera = true
+  export let freezeCamera = false
   export let volume = 1
 
   export const respawn = () => {
@@ -23,7 +28,28 @@
   actions.use('resetTimeAttack', respawn)
 
   const { scene } = useThrelte()
+
+  $: camera =
+    useCarCamera && !freezeCamera ? 'car' : useCarCamera && freezeCamera ? 'carFreeze' : 'default'
+
+  $: if (freezeCamera) {
+    carCam.updateMatrix()
+    const carCamWorldPosition = new Vector3()
+    carCam.getWorldPosition(carCamWorldPosition)
+    const carCamWorldQuaternion = new Quaternion()
+    carCam.getWorldQuaternion(carCamWorldQuaternion)
+
+    freezeCam.position.copy(carCamWorldPosition)
+    freezeCam.quaternion.copy(carCamWorldQuaternion)
+  }
 </script>
+
+<T.PerspectiveCamera
+  bind:ref={freezeCam}
+  slot="camera"
+  fov={70}
+  makeDefault={camera === 'carFreeze'}
+/>
 
 <RaycastVehicleController
   bind:respawn={respawnCar}
@@ -32,10 +58,11 @@
   {volume}
 >
   <T.PerspectiveCamera
+    bind:ref={carCam}
     slot="camera"
     rotation={[-90 * DEG2RAD, 75 * DEG2RAD, 90 * DEG2RAD]}
     fov={70}
-    makeDefault={useCarCamera}
+    makeDefault={camera === 'car'}
   />
 
   <svelte:fragment

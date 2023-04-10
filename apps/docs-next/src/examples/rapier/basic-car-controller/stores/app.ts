@@ -31,13 +31,24 @@ type GameState = {
   readonly gameType: CurrentWritable<GameType>
   readonly trackData: CurrentWritable<TrackData | undefined>
   readonly paused: CurrentWritable<boolean>
-  readonly timeAttack: {
-    readonly state: CurrentWritable<'track-intro' | 'count-in' | 'playing' | 'finished'>
+  /**
+   * The common current gameplay state.
+   * Every game type has its own state, but this is the common one.
+   */
+  readonly common: {
     readonly time: CurrentWritable<number>
   }
+  readonly timeAttack: {
+    readonly state: CurrentWritable<'track-intro' | 'count-in' | 'playing' | 'finished'>
+  }
   readonly trackEditor: {
-    readonly state: CurrentWritable<'editing' | 'validating' | 'finished'>
-    readonly editorView: CurrentWritable<'car' | 'orbit'>
+    readonly state: CurrentWritable<'editing' | 'validation'>
+    readonly editing: {
+      readonly view: CurrentWritable<'car' | 'orbit'>
+    }
+    readonly validation: {
+      readonly state: CurrentWritable<'intro' | 'count-in' | 'validation' | 'finished'>
+    }
   }
 }
 
@@ -86,13 +97,20 @@ const _gameState: GameState = {
   gameType: createState('time-attack'),
   trackData: createState(undefined),
   paused: createState(false),
+  common: {
+    time: createState(0)
+  },
   timeAttack: {
-    time: createState(0),
     state: createState('track-intro')
   },
   trackEditor: {
-    editorView: createState('orbit'),
-    state: createState('editing')
+    state: createState('editing'),
+    editing: {
+      view: createState('orbit')
+    },
+    validation: {
+      state: createState('intro')
+    }
   }
 }
 
@@ -103,13 +121,20 @@ export const gameState = {
   gameType: toCurrentReadable(_gameState.gameType),
   trackData: toCurrentReadable(_gameState.trackData),
   paused: toCurrentReadable(_gameState.paused),
+  common: {
+    time: toCurrentReadable(_gameState.common.time)
+  },
   timeAttack: {
-    time: toCurrentReadable(_gameState.timeAttack.time),
     state: toCurrentReadable(_gameState.timeAttack.state)
   },
   trackEditor: {
-    editorView: toCurrentReadable(_gameState.trackEditor.editorView),
-    state: toCurrentReadable(_gameState.trackEditor.state)
+    state: toCurrentReadable(_gameState.trackEditor.state),
+    editing: {
+      view: toCurrentReadable(_gameState.trackEditor.editing.view)
+    },
+    validation: {
+      state: toCurrentReadable(_gameState.trackEditor.validation.state)
+    }
   }
 }
 
@@ -197,6 +222,26 @@ export const actions = buildActions(
 
     /**
      * ++++++++++++++++++++++++++++++++
+     * Timing Actions
+     * ++++++++++++++++++++++++++++++++
+     */
+
+    resetGameTime: () => {
+      _gameState.common.time.set(0)
+    },
+
+    /**
+     * The time is incremented to prevent accidentally setting it higher in the
+     * event of a game pause or other situations.
+     * This action does not emit an event!
+     */
+    incrementGameTime: (time: number) => {
+      _gameState.common.time.update((t) => t + time)
+      return { debug: false }
+    },
+
+    /**
+     * ++++++++++++++++++++++++++++++++
      * Time Attack Actions
      * ++++++++++++++++++++++++++++++++
      */
@@ -205,42 +250,19 @@ export const actions = buildActions(
       _gameState.paused.set(false)
       _gameState.gameType.set('time-attack')
       _gameState.timeAttack.state.set('track-intro')
-      _gameState.timeAttack.time.set(0)
     },
 
     timeAttackStartCountIn: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.timeAttack.state.current !== 'track-intro') return false
-      if (_gameState.gameType.current !== 'time-attack') return false
       _gameState.timeAttack.state.set('count-in')
     },
 
     timeAttackStartPlaying: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.timeAttack.state.current !== 'count-in') return false
-      if (_gameState.gameType.current !== 'time-attack') return false
+      actions.resetGameTime()
       _gameState.timeAttack.state.set('playing')
     },
 
     timeAttackFinish: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.timeAttack.state.current !== 'playing') return false
-      if (_gameState.gameType.current !== 'time-attack') return false
       _gameState.timeAttack.state.set('finished')
-    },
-
-    /**
-     * The time is incremented to prevent accidentally setting it higher in the
-     * event of a game pause or other situations.
-     * This action does not emit an event!
-     */
-    incrementTimeAttackTime: (time: number) => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.gameType.current !== 'time-attack') return false
-      if (_gameState.timeAttack.state.current !== 'playing') return false
-      if (_gameState.paused.current) return false
-      _gameState.timeAttack.time.update((t) => t + time)
-      return { debug: false }
     },
 
     /**
@@ -248,9 +270,8 @@ export const actions = buildActions(
      * We begin *before* the count-in.
      */
     resetTimeAttack: () => {
-      if (_appState.state.current !== 'game') return false
       _gameState.timeAttack.state.set('track-intro')
-      _gameState.timeAttack.time.set(0)
+      actions.resetGameTime()
     },
 
     /**
@@ -258,13 +279,10 @@ export const actions = buildActions(
      * We begin *during* the count-in, so the game play is not affected.
      */
     softResetTimeAttack: () => {
-      if (_appState.state.current !== 'game') return false
       // a soft reset can only be done while playing
-      if (_gameState.timeAttack.state.current !== 'playing') return false
       // and not while paused
-      if (_gameState.paused.current) return false
       _gameState.timeAttack.state.set('count-in')
-      _gameState.timeAttack.time.set(0)
+      actions.resetGameTime()
     },
 
     /**
@@ -277,35 +295,46 @@ export const actions = buildActions(
       _appState.state.set('game')
       _gameState.paused.set(false)
       _gameState.gameType.set('track-editor')
-      _gameState.trackEditor.editorView.set('orbit')
       _gameState.trackEditor.state.set('editing')
+      _gameState.trackEditor.editing.view.set('orbit')
     },
 
     setTrackEditorView: (view: 'orbit' | 'car') => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.gameType.current !== 'track-editor') return false
-      _gameState.trackEditor.editorView.set(view)
+      _gameState.trackEditor.editing.view.set(view)
     },
 
     startTrackValidation: () => {
-      if (_appState.state.current !== 'game') return false
-      if (_gameState.gameType.current !== 'track-editor') return false
-      _gameState.paused.set(false)
-      _gameState.trackEditor.state.set('validating')
+      _gameState.trackEditor.state.set('validation')
+      _gameState.trackEditor.validation.state.set('intro')
+    },
+
+    startTrackValidationCountIn: () => {
+      _gameState.trackEditor.validation.state.set('count-in')
+    },
+
+    startTrackValidationPlaying: () => {
+      _gameState.trackEditor.validation.state.set('validation')
+    },
+
+    trackValidationFinished: (authorTime: number) => {
+      _gameState.trackEditor.validation.state.set('finished')
+      _gameState.trackData.current?.setValidated(true)
+      _gameState.trackData.current?.timeAttackTrackTimes.author.set(authorTime)
+    },
+
+    cancelTrackValidation: () => {
+      actions.startTrackEditor()
     },
 
     pauseGame: () => {
-      if (_appState.state.current !== 'game') return false
       _gameState.paused.set(true)
     },
 
     resumeGame: () => {
-      if (_appState.state.current !== 'game') return false
       _gameState.paused.set(false)
     },
 
     toggleGamePaused: () => {
-      if (_appState.state.current !== 'game') return false
       if (_gameState.paused.current) actions.resumeGame()
       else actions.pauseGame()
     }
