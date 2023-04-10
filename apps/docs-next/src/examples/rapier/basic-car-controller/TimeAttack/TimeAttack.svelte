@@ -1,7 +1,7 @@
 <script lang="ts">
   import { derived } from 'svelte/store'
   import Car from '../Car/Car.svelte'
-  import TrackState from '../Track/TrackState.svelte'
+  import GameTime from '../Track/GameTime.svelte'
   import TrackElement from '../Track/TrackViewer/TrackElement.svelte'
   import TrackElementTransform from '../Track/TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../Track/TrackViewer/TrackViewer.svelte'
@@ -63,6 +63,10 @@
   })
 
   useGameIsPausable()
+
+  actions.use('finishReached', () => {
+    actions.timeAttackFinish()
+  })
 </script>
 
 <!-- UI -->
@@ -91,12 +95,7 @@
 {/if}
 
 <!-- 3D -->
-<TrackState
-  {trackData}
-  on:trackcomplete={() => {
-    actions.timeAttackFinish()
-  }}
->
+<GameTime>
   <TrackViewer
     let:trackElement
     {trackData}
@@ -105,10 +104,9 @@
       <TrackElement {trackElement} />
     </TrackElementTransform>
   </TrackViewer>
-</TrackState>
+</GameTime>
 
 <Car
   active={$carActive}
   volume={$carVolume}
-  freezeCamera={$state === 'finished'}
 />

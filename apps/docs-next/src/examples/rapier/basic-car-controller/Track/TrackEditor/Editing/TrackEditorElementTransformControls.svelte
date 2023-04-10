@@ -10,7 +10,7 @@
   import { TransformControls } from '@threlte/extras'
   import { derived } from 'svelte/store'
   import type { Group } from 'three'
-  import { useTrackEditor } from './../context'
+  import { useTrackEditor } from './context'
   import { onDestroy } from 'svelte'
   import type { TrackElement } from '../../TrackData/TrackData'
 

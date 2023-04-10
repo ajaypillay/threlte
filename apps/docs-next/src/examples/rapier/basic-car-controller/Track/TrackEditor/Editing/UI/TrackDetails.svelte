@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useTrackEditor } from '../../context'
+  import { useTrackEditor } from '../context'
 
   const { trackData } = useTrackEditor()
 

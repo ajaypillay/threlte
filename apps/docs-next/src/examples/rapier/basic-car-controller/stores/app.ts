@@ -37,6 +37,9 @@ type GameState = {
    */
   readonly common: {
     readonly time: CurrentWritable<number>
+    readonly checkpointsReached: CurrentWritable<Set<string>>
+    readonly lastCheckpoint: CurrentWritable<string | undefined>
+    readonly finishReached: CurrentWritable<boolean>
   }
   readonly timeAttack: {
     readonly state: CurrentWritable<'track-intro' | 'count-in' | 'playing' | 'finished'>
@@ -98,7 +101,10 @@ const _gameState: GameState = {
   trackData: createState(undefined),
   paused: createState(false),
   common: {
-    time: createState(0)
+    time: createState(0),
+    checkpointsReached: createState(new Set()),
+    lastCheckpoint: createState(undefined),
+    finishReached: createState(false)
   },
   timeAttack: {
     state: createState('track-intro')
@@ -122,7 +128,10 @@ export const gameState = {
   trackData: toCurrentReadable(_gameState.trackData),
   paused: toCurrentReadable(_gameState.paused),
   common: {
-    time: toCurrentReadable(_gameState.common.time)
+    time: toCurrentReadable(_gameState.common.time),
+    checkpointsReached: toCurrentReadable(_gameState.common.checkpointsReached),
+    lastCheckpoint: toCurrentReadable(_gameState.common.lastCheckpoint),
+    finishReached: toCurrentReadable(_gameState.common.finishReached)
   },
   timeAttack: {
     state: toCurrentReadable(_gameState.timeAttack.state)
@@ -190,11 +199,8 @@ export const actions = buildActions(
 
     /**
      * -----------------------------------------------------
-     * Game Actions
+     * TrackData Actions
      * -----------------------------------------------------
-     *
-     * These actions should be called as close to Game.svelte
-     * as possible and reasonable.
      */
 
     loadTrackDataFromServer: async (trackId: string, callback: () => void) => {
@@ -221,9 +227,9 @@ export const actions = buildActions(
     },
 
     /**
-     * ++++++++++++++++++++++++++++++++
-     * Timing Actions
-     * ++++++++++++++++++++++++++++++++
+     * -----------------------------------------------------
+     * Common Gameplay Actions
+     * -----------------------------------------------------
      */
 
     resetGameTime: () => {
@@ -236,14 +242,75 @@ export const actions = buildActions(
      * This action does not emit an event!
      */
     incrementGameTime: (time: number) => {
+      if (_gameState.common.finishReached.current) {
+        return { debug: false, invalid: true }
+      }
       _gameState.common.time.update((t) => t + time)
       return { debug: false }
     },
 
+    checkpointReached: (trackElementId: string) => {
+      if (_gameState.common.checkpointsReached.current.has(trackElementId)) {
+        return { invalid: true }
+      }
+      _gameState.common.checkpointsReached.update((set) => {
+        set.add(trackElementId)
+        return set
+      })
+      _gameState.common.lastCheckpoint.set(trackElementId)
+    },
+
+    clearCheckpoints: () => {
+      _gameState.common.finishReached.set(false)
+      _gameState.common.checkpointsReached.update((set) => {
+        set.clear()
+        return set
+      })
+      _gameState.common.lastCheckpoint.set(undefined)
+    },
+
+    finishReached: () => {
+      if (
+        _gameState.trackData.current?.checkpointCount.current !==
+        _gameState.common.checkpointsReached.current.size
+      ) {
+        return { invalid: true }
+      }
+      if (_gameState.common.finishReached.current) {
+        return { invalid: true }
+      }
+      _gameState.common.finishReached.set(true)
+    },
+
+    clearFinish: () => {
+      _gameState.common.finishReached.set(false)
+    },
+
+    resetCar: () => {
+      if (_gameState.common.finishReached.current) {
+        return { invalid: true }
+      }
+    },
+
     /**
-     * ++++++++++++++++++++++++++++++++
+     * Resets the common game state to its initial state.
+     * Includes:
+     * - Time elapsed
+     * - Checkpoints reached and last checkpoint
+     * - Finish reached
+     * - Car position
+     */
+    resetGameplay: () => {
+      actions.resetGameTime()
+      actions.clearCheckpoints()
+      actions.clearFinish()
+      actions.resetCar()
+    },
+
+    /**
+     * -----------------------------------------------------
      * Time Attack Actions
-     * ++++++++++++++++++++++++++++++++
+     * -----------------------------------------------------
      */
     startTimeAttack: () => {
       _appState.state.set('game')
@@ -257,7 +324,7 @@ export const actions = buildActions(
     },
 
     timeAttackStartPlaying: () => {
-      actions.resetGameTime()
+      actions.resetGameplay()
       _gameState.timeAttack.state.set('playing')
     },
 
@@ -271,7 +338,7 @@ export const actions = buildActions(
      */
     resetTimeAttack: () => {
       _gameState.timeAttack.state.set('track-intro')
-      actions.resetGameTime()
+      actions.resetGameplay()
     },
 
     /**
@@ -282,13 +349,13 @@ export const actions = buildActions(
       // a soft reset can only be done while playing
       // and not while paused
       _gameState.timeAttack.state.set('count-in')
-      actions.resetGameTime()
+      actions.resetGameplay()
     },
 
     /**
-     * ++++++++++++++++++++++++++++++++
+     * -----------------------------------------------------
      * Track Editor Actions
-     * ++++++++++++++++++++++++++++++++
+     * -----------------------------------------------------
      */
 
     startTrackEditor: () => {
@@ -314,6 +381,7 @@ export const actions = buildActions(
 
     startTrackValidationPlaying: () => {
       _gameState.trackEditor.validation.state.set('validation')
+      actions.resetGameplay()
     },
 
     trackValidationFinished: (authorTime: number) => {

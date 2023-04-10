@@ -6,7 +6,7 @@
   import MuscleCar from './Models/MuscleCar.svelte'
   import MuscleCarWheel from './Models/MuscleCarWheel.svelte'
   import { sunPos } from '../config'
-  import { actions } from '../stores/app'
+  import { actions, gameState } from '../stores/app'
   import { PerspectiveCamera, Quaternion, Vector3 } from 'three'
 
   let carCam: PerspectiveCamera
@@ -16,7 +16,6 @@
   export let debug = false
   export let active = false
   export let useCarCamera = true
-  export let freezeCamera = false
   export let volume = 1
 
   export const respawn = () => {
@@ -24,13 +23,13 @@
   }
 
   // The car is respawning on certain events
-  actions.use('softResetTimeAttack', respawn)
-  actions.use('resetTimeAttack', respawn)
+  actions.use('resetCar', respawn)
 
   const { scene } = useThrelte()
 
-  $: camera =
-    useCarCamera && !freezeCamera ? 'car' : useCarCamera && freezeCamera ? 'carFreeze' : 'default'
+  const { finishReached } = gameState.common
+
+  $: freezeCamera = useCarCamera && $finishReached
 
   $: if (freezeCamera) {
     carCam.updateMatrix()
@@ -42,6 +41,9 @@
     freezeCam.position.copy(carCamWorldPosition)
     freezeCam.quaternion.copy(carCamWorldQuaternion)
   }
+
+  $: camera =
+    useCarCamera && !freezeCamera ? 'car' : useCarCamera && freezeCamera ? 'carFreeze' : 'default'
 </script>
 
 <T.PerspectiveCamera

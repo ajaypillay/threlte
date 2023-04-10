@@ -1,34 +1,79 @@
 <script lang="ts">
   import { T } from '@threlte/core'
+  import { OrbitControls, interactivity } from '@threlte/extras'
   import Car from '../../../Car/Car.svelte'
-  import { OrbitControls } from '@threlte/extras'
-  import { actions, gameState } from '../../../stores/app'
-  import { useKeyDown } from '../../../useKeyDown'
   import UiWrapper from '../../../UI/UiWrapper.svelte'
-  import AddElement from './UI/AddElement.svelte'
-  import { useTrackEditor } from '../context'
-  import ElementDetails from './UI/ElementDetails.svelte'
-  import ReplaceWithElement from './UI/ReplaceWithElement.svelte'
-  import DuplicateElement from './UI/DuplicateElement.svelte'
-  import RemoveElement from './UI/RemoveElement.svelte'
-  import StartTrackValidation from './UI/StartTrackValidation.svelte'
-  import SaveTrack from './UI/SaveTrack.svelte'
-  import TrackDetails from './UI/TrackDetails.svelte'
-  import TrackState from '../../TrackState.svelte'
-  import TrackViewer from '../../TrackViewer/TrackViewer.svelte'
-  import TrackEditorElementTransformControls from './TrackEditorElementTransformControls.svelte'
-  import TrackElementTransform from '../../TrackViewer/TrackElementTransform.svelte'
+  import { actions, gameState } from '../../../stores/app'
+  import { useGameIsPausable } from '../../../useGameIsPausable'
+  import { useKeyDown } from '../../../useKeyDown'
+  import { useKeyUp } from '../../../useKeyUp'
+  import type { TrackData } from '../../TrackData/TrackData'
   import TrackElement from '../../TrackViewer/TrackElement.svelte'
+  import TrackElementTransform from '../../TrackViewer/TrackElementTransform.svelte'
+  import TrackViewer from '../../TrackViewer/TrackViewer.svelte'
   import TrackEditorElementSelection from './TrackEditorElementSelection.svelte'
   import TrackEditorElementSelector from './TrackEditorElementSelector.svelte'
-  import { useGameIsPausable } from '../../../useGameIsPausable'
+  import TrackEditorElementTransformControls from './TrackEditorElementTransformControls.svelte'
+  import AddElement from './UI/AddElement.svelte'
+  import DuplicateElement from './UI/DuplicateElement.svelte'
   import EditingPaused from './UI/EditingPaused.svelte'
+  import ElementDetails from './UI/ElementDetails.svelte'
+  import RemoveElement from './UI/RemoveElement.svelte'
+  import ReplaceWithElement from './UI/ReplaceWithElement.svelte'
+  import SaveTrack from './UI/SaveTrack.svelte'
+  import StartTrackValidation from './UI/StartTrackValidation.svelte'
+  import TrackDetails from './UI/TrackDetails.svelte'
+  import { createTrackEditorContext } from './context'
+
+  export let trackData: TrackData
 
   const { paused } = gameState
   const { view } = gameState.trackEditor.editing
-  const { currentlySelectedElement, trackData } = useTrackEditor()
 
-  $: carActive = $view === 'car'
+  $: carActive = $view === 'car' && !$paused
+
+  interactivity()
+
+  const { currentlySelectedElement, transformMode, transformSpace, transformSnap } =
+    createTrackEditorContext(trackData)
+
+  useKeyDown('t', () => {
+    transformMode.set('translate')
+  })
+
+  useKeyDown('r', () => {
+    transformMode.set('rotate')
+  })
+
+  useKeyDown('g', () => {
+    transformSpace.update((space) => {
+      if (space === 'local') {
+        return 'world'
+      } else {
+        return 'local'
+      }
+    })
+  })
+
+  useKeyDown('Shift+D', () => {
+    if (!$currentlySelectedElement) return
+    const newElement = trackData.duplicateTrackElement($currentlySelectedElement.id)
+    currentlySelectedElement.set(newElement)
+  })
+
+  useKeyDown('Control+Backspace', () => {
+    if (!$currentlySelectedElement) return
+    trackData.removeTrackElement($currentlySelectedElement.id)
+    currentlySelectedElement.set(undefined)
+  })
+
+  useKeyDown('Shift', () => {
+    transformSnap.set(true)
+  })
+
+  useKeyUp('Shift', () => {
+    transformSnap.set(false)
+  })
 
   useKeyDown('v', () => {
     if ($view === 'car') {
@@ -39,6 +84,12 @@
   })
 
   useGameIsPausable()
+
+  useKeyDown('Enter', () => {
+    if ($view === 'car') {
+      actions.resetGameplay()
+    }
+  })
 </script>
 
 <!-- UI -->
@@ -68,32 +119,30 @@
 {/if}
 
 <!-- 3D -->
-<TrackState {trackData}>
-  <TrackViewer
-    {trackData}
-    let:trackElement
-  >
-    <TrackEditorElementTransformControls {trackElement} />
+<TrackViewer
+  {trackData}
+  let:trackElement
+>
+  <TrackEditorElementTransformControls {trackElement} />
 
-    <TrackElementTransform
-      reactive
+  <TrackElementTransform
+    reactive
+    {trackElement}
+  >
+    <TrackEditorElementSelector
       {trackElement}
+      let:selected
     >
-      <TrackEditorElementSelector
-        {trackElement}
-        let:selected
-      >
-        <TrackElement {trackElement}>
-          <svelte:fragment slot="track-element-selection">
-            {#if selected}
-              <TrackEditorElementSelection />
-            {/if}
-          </svelte:fragment>
-        </TrackElement>
-      </TrackEditorElementSelector>
-    </TrackElementTransform>
-  </TrackViewer>
-</TrackState>
+      <TrackElement {trackElement}>
+        <svelte:fragment slot="track-element-selection">
+          {#if selected}
+            <TrackEditorElementSelection />
+          {/if}
+        </svelte:fragment>
+      </TrackElement>
+    </TrackEditorElementSelector>
+  </TrackElementTransform>
+</TrackViewer>
 
 <Car
   active={carActive}

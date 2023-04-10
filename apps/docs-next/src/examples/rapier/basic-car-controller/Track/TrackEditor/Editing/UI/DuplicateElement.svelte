@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button from '../../../../UI/components/Button.svelte'
-  import { useTrackEditor } from '../../context'
+  import { useTrackEditor } from '../context'
 
   const { trackData, currentlySelectedElement } = useTrackEditor()
   const validated = trackData.validated

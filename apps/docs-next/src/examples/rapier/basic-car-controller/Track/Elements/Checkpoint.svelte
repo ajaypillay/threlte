@@ -12,8 +12,7 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
   import { derived } from 'svelte/store'
   import type * as THREE from 'three'
   import { Group, Mesh } from 'three'
-  import { gameState } from '../../stores/app'
-  import { useTrackState } from '../TrackState.svelte'
+  import { actions, gameState } from '../../stores/app'
   import { useTrackElement } from '../TrackViewer/TrackElement.svelte'
   import { useRefreshCollider } from '../utils/useRefreshCollider'
 
@@ -46,11 +45,10 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
 
   const gltf = load()
 
-  const { paused } = gameState
+  const { paused, common } = gameState
+  const { checkpointsReached } = common
 
   const trackElement = useTrackElement()
-
-  const { registerCheckpointReached, checkpointsReached } = useTrackState()
 
   const checkpointReached = derived(checkpointsReached, (checkpointsReached) => {
     return trackElement && checkpointsReached.has(trackElement.id)
@@ -145,7 +143,7 @@ Command: npx @threlte/gltf@1.0.0-next.2 ./checkpoint.glb -i -P -t -s -T
           bind:refresh={refreshFns[2]}
           on:sensorenter={() => {
             if (!trackElement) return
-            registerCheckpointReached(trackElement.id)
+            actions.checkpointReached(trackElement.id)
           }}
           sensor
         />

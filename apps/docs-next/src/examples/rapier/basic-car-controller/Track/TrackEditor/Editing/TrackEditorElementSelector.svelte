@@ -1,6 +1,6 @@
 <script lang="ts">
   import { T } from '@threlte/core'
-  import { useTrackEditor } from '../context'
+  import { useTrackEditor } from './context'
   import type { TrackElement } from '../../TrackData/TrackData'
   import { gameState } from '../../../stores/app'
 

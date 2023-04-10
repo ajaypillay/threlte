@@ -17,9 +17,9 @@
   import { useTexture } from '@threlte/extras'
   import { AutoColliders, Collider, CollisionGroups } from '@threlte/rapier'
   import { MeshStandardMaterial, TorusGeometry } from 'three'
-  import { useTrackState } from '../TrackState.svelte'
   import { useTrackElement } from '../TrackViewer/TrackElement.svelte'
   import { useRefreshCollider } from '../utils/useRefreshCollider'
+  import { actions } from '../../stores/app'
 
   // color: 'Dark' | 'Green' | 'Light' | 'Orange' | 'Purple' | 'Red' = 'Dark'
 
@@ -35,7 +35,6 @@
   const { refreshFns } = useRefreshCollider()
 
   const trackElement = useTrackElement()
-  const { registerCheckpointReached } = useTrackState()
 </script>
 
 <T.Group {...$$restProps}>
@@ -66,7 +65,7 @@
         args={[0.5, 4.5]}
         on:sensorenter={() => {
           if (!trackElement) return
-          registerCheckpointReached(trackElement.id)
+          actions.checkpointReached(trackElement.id)
         }}
         sensor
         bind:refresh={refreshFns[1]}
