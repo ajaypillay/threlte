@@ -203,27 +203,27 @@ export const actions = buildActions(
      * -----------------------------------------------------
      */
 
-    loadTrackDataFromServer: async (trackId: string, callback: () => void) => {
+    loadTrackDataFromServer: async (trackId: string, callback: (trackData: TrackData) => void) => {
       _appState.state.set('game')
       _gameState.trackData.set(undefined)
       const trackData = await TrackData.fromServer(trackId)
       _gameState.trackData.set(trackData)
-      callback()
+      callback(trackData)
     },
 
-    loadTrackDataFromLocalStorage: (trackId: string, callback: () => void) => {
+    loadTrackDataFromLocalStorage: (trackId: string, callback: (trackData?: TrackData) => void) => {
       _appState.state.set('game')
       _gameState.trackData.set(undefined)
       const trackData = TrackData.fromLocalStorage(trackId)
       _gameState.trackData.set(trackData)
-      callback()
+      callback(trackData)
     },
 
-    loadEmptyTrackData: (callback: () => void) => {
+    loadEmptyTrackData: (callback: (trackData: TrackData) => void) => {
       _appState.state.set('game')
       const trackData = TrackData.createEmpty()
       _gameState.trackData.set(trackData)
-      callback()
+      callback(trackData)
     },
 
     /**

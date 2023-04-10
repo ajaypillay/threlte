@@ -5,7 +5,7 @@
   import { tick } from 'svelte'
   import { derived } from 'svelte/store'
   import Env from './Env.svelte'
-  import IntroAndMenuBackground from './IntroAndMenuBackground.svelte'
+  import IntroAndMenuBackground from './Intro/IntroAndMenuBackground.svelte'
   import Menu from './Menu.svelte'
   import { appState } from './stores/app'
   import { useKeyPress } from './useKeyPress'

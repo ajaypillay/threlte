@@ -6,11 +6,11 @@
   import { tweened } from 'svelte/motion'
   import { Color, PerspectiveCamera } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
-  import CameraFade from './CameraFade.svelte'
-  import HalfBox from './Track/Elements/HalfBox.svelte'
-  import MuscleCar from './Car/Models/MuscleCar.svelte'
-  import MuscleCarWheel from './Car/Models/MuscleCarWheel.svelte'
-  import { actions, appState } from './stores/app'
+  import CameraFade from '../CameraFade.svelte'
+  import MuscleCar from '../Car/Models/MuscleCar.svelte'
+  import MuscleCarWheel from '../Car/Models/MuscleCarWheel.svelte'
+  import { actions, appState } from '../stores/app'
+  import Box from './Box.svelte'
 
   const { state } = appState
 
@@ -104,7 +104,7 @@
 
   let offset = 0
 
-  const boxComponents = [HalfBox]
+  const boxComponents = [Box]
   const boxLength = 5
   const trackElements = 40
   const trackLength = trackElements * boxLength
