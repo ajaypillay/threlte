@@ -2,9 +2,10 @@
   import UiWrapper from '../../../../UI/UiWrapper.svelte'
   import Button from '../../../../UI/components/Button.svelte'
   import { actions } from '../../../../stores/app'
-  import { useTrackEditor } from '../../Editing/context'
+  import type { TrackData } from '../../../TrackData/TrackData'
 
-  const { trackData } = useTrackEditor()
+  export let trackData: TrackData
+
   const { canBeSaved } = trackData
 </script>
 

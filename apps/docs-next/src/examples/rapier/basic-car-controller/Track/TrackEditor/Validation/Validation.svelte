@@ -13,7 +13,8 @@
   import ValidationIntro from './UI/ValidationIntro.svelte'
   import ValidationPaused from './UI/ValidationPaused.svelte'
 
-  const { paused, trackEditor } = gameState
+  const { paused, trackEditor, common } = gameState
+
   const { validation } = trackEditor
   const { state } = validation
 
@@ -24,7 +25,7 @@
   useGameIsPausable()
 
   actions.use('finishReached', () => {
-    actions.trackValidationFinished(1000)
+    actions.trackValidationFinished(common.time.current)
   })
 </script>
 
@@ -43,7 +44,7 @@
   {:else if $state === 'validation'}
     <ValidationInProgress />
   {:else if $state === 'finished'}
-    <ValidationFinished />
+    <ValidationFinished {trackData} />
   {/if}
 {/if}
 
