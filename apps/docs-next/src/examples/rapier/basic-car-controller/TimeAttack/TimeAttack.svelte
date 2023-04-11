@@ -1,20 +1,21 @@
 <script lang="ts">
   import { derived } from 'svelte/store'
   import Car from '../Car/Car.svelte'
-  import GameTime from '../Track/GameTime.svelte'
-  import TrackElement from '../Track/TrackViewer/TrackElement.svelte'
-  import TrackElementTransform from '../Track/TrackViewer/TrackElementTransform.svelte'
-  import TrackViewer from '../Track/TrackViewer/TrackViewer.svelte'
+  import GameTime from '../Common/GameTime.svelte'
   import { actions, appState, gameState } from '../stores/app'
-  import { useKeyPress } from '../useKeyPress'
+  import { useKeyPress } from '../utils/useKeyPress'
+
   // UI
-  import type { TrackData } from '../Track/TrackData/TrackData'
+  import type { TrackData } from '../TrackData/TrackData'
   import CountIn from '../UI/Common/CountIn.svelte'
-  import GamePauseMenu from '../UI/GamePauseMenu.svelte'
-  import { useGameIsPausable } from '../useGameIsPausable'
+  import TimeAttackPaused from './UI/TimeAttackPaused.svelte'
+  import { useGameIsPausable } from '../utils/useGameIsPausable'
   import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
   import TimeAttackUi from './UI/TimeAttackUi.svelte'
   import TrackIntro from './UI/TrackIntro.svelte'
+  import TrackViewer from '../TrackViewer/TrackViewer.svelte'
+  import TrackElementTransform from '../TrackViewer/TrackElementTransform.svelte'
+  import TrackElement from '../TrackViewer/TrackElement.svelte'
 
   export let trackData: TrackData
 
@@ -91,7 +92,7 @@
 {/if}
 
 {#if $paused}
-  <GamePauseMenu />
+  <TimeAttackPaused />
 {/if}
 
 <!-- 3D -->

@@ -1,7 +1,7 @@
 <script lang="ts">
   import UiWrapper from '../../UI/UiWrapper.svelte'
   import { actions } from '../../stores/app'
-  import { useKeyPress } from '../../useKeyPress'
+  import { useKeyPress } from '../../utils/useKeyPress'
 
   useKeyPress('Enter', () => {
     actions.timeAttackStartCountIn()

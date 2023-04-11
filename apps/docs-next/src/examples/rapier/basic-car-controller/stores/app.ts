@@ -1,6 +1,6 @@
 import type { CurrentWritable } from '@threlte/core'
 import { buildActions, createState, toCurrentReadable } from './utils'
-import { TrackData } from '../Track/TrackData/TrackData'
+import { TrackData } from '../TrackData/TrackData'
 
 /**
  * -----------------------------------------------------
@@ -222,6 +222,12 @@ export const actions = buildActions(
     loadEmptyTrackData: (callback: (trackData: TrackData) => void) => {
       _appState.state.set('game')
       const trackData = TrackData.createEmpty()
+      _gameState.trackData.set(trackData)
+      callback(trackData)
+    },
+
+    setTrackData: (trackData: TrackData, callback: (trackData: TrackData) => void) => {
+      _appState.state.set('game')
       _gameState.trackData.set(trackData)
       callback(trackData)
     },

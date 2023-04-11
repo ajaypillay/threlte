@@ -4,12 +4,12 @@
   import Stats from 'stats.js'
   import { tick } from 'svelte'
   import { derived } from 'svelte/store'
-  import Env from './Env.svelte'
+  import Env from './Common/Env.svelte'
   import IntroAndMenuBackground from './Intro/IntroAndMenuBackground.svelte'
-  import Menu from './Menu.svelte'
+  import Menu from './Menu/Menu.svelte'
   import { appState } from './stores/app'
-  import { useKeyPress } from './useKeyPress'
-  import NewGame from './NewGame.svelte'
+  import { useKeyPress } from './utils/useKeyPress'
+  import Game from './Game/Game.svelte'
 
   const { state, visibility } = appState
 
@@ -66,5 +66,5 @@
 {#if $state === 'menu'}
   <Menu />
 {:else if $state === 'game'}
-  <NewGame />
+  <Game />
 {/if}

@@ -2,7 +2,7 @@
   import { T, useThrelte } from '@threlte/core'
   import { Portal } from '@threlte/extras'
   import { DEG2RAD } from 'three/src/math/MathUtils'
-  import RaycastVehicleController from './RaycastVehicleController.svelte'
+  import RaycastVehicleController from './RaycastVehicleController/RaycastVehicleController.svelte'
   import MuscleCar from './Models/MuscleCar.svelte'
   import MuscleCarWheel from './Models/MuscleCarWheel.svelte'
   import { sunPos } from '../config'

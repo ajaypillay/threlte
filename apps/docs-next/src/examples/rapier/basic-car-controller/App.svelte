@@ -10,7 +10,7 @@
     saveStateToLocalStorage,
     loadStateFromLocalStorage
   } from './stores/app'
-  import { useKeyPress } from './useKeyPress'
+  import { useKeyPress } from './utils/useKeyPress'
 
   const { debug } = appState
 

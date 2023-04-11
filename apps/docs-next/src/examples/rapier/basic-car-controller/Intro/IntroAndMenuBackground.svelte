@@ -6,7 +6,7 @@
   import { tweened } from 'svelte/motion'
   import { Color, PerspectiveCamera } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
-  import CameraFade from '../CameraFade.svelte'
+  import CameraFade from '../utils/CameraFade.svelte'
   import MuscleCar from '../Car/Models/MuscleCar.svelte'
   import MuscleCarWheel from '../Car/Models/MuscleCarWheel.svelte'
   import { actions, appState } from '../stores/app'
