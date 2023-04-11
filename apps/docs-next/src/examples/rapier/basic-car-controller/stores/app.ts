@@ -330,7 +330,6 @@ export const actions = buildActions(
     },
 
     timeAttackStartPlaying: () => {
-      actions.resetGameplay()
       _gameState.timeAttack.state.set('playing')
     },
 
@@ -343,8 +342,8 @@ export const actions = buildActions(
      * We begin *before* the count-in.
      */
     resetTimeAttack: () => {
-      _gameState.timeAttack.state.set('track-intro')
       actions.resetGameplay()
+      _gameState.timeAttack.state.set('track-intro')
     },
 
     /**
@@ -354,8 +353,8 @@ export const actions = buildActions(
     softResetTimeAttack: () => {
       // a soft reset can only be done while playing
       // and not while paused
-      _gameState.timeAttack.state.set('count-in')
       actions.resetGameplay()
+      _gameState.timeAttack.state.set('count-in')
     },
 
     /**
