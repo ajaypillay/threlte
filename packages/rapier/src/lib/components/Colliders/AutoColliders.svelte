@@ -62,6 +62,7 @@
       removeColliderFromContext(c)
       world.removeCollider(c, true)
     })
+    colliders.length = 0
   }
 
   export const create = () => {

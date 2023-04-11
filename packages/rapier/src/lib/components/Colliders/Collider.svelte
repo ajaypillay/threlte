@@ -178,6 +178,7 @@
     rapierContext.removeColliderFromContext(collider)
     collisionGroups.removeColliders([collider])
     world.removeCollider(collider, true)
+    collider = undefined
   })
 </script>
 
