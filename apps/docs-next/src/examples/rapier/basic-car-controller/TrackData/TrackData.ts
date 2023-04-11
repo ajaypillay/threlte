@@ -3,6 +3,7 @@ import type { Vector3Tuple } from 'three'
 import { JsonCurrentWritable, jsonCurrentWritable } from '../utils/jsonCurrentWritable'
 import { CurrentWritable, currentWritable } from '@threlte/core'
 import type { trackElementPrototypes } from '../TrackElements/elements'
+import { cyrb53 } from '../utils/hash'
 
 type JsonCurrentReadable<T> = Readable<T> & {
   current: T
@@ -99,8 +100,43 @@ export class TrackData {
   #validated: JsonCurrentWritable<boolean> = jsonCurrentWritable(false)
   validated: JsonCurrentReadable<boolean> = jsonCurrentReadable(this.#validated)
 
-  public setValidated(validated: boolean) {
-    this.#validated.set(validated)
+  /**
+   * The validation is used to invalidate track records when the track changed.
+   */
+  validationId: string = ''
+
+  /**
+   * The validation id is a hash of all track elements. It is used to invalidate
+   * track records when the track changed. The elements are sorted by
+   * their contents to ensure that the order of the elements does not matter.
+   */
+  private calculateValidationId() {
+    const numbersToString = (args: (number | string)[]) => {
+      return args.map((arg) => (typeof arg === 'number' ? arg.toFixed(8) : arg)).join(':')
+    }
+    const trackElementsStringRepresentation = this.trackElements.current
+      .map((trackElement) => {
+        const position = numbersToString(trackElement.position.current)
+        const rotation = numbersToString(trackElement.rotation.current)
+        return `${trackElement.type.current}:${position}:${rotation}`
+      })
+      .sort((a, b) => {
+        return a.localeCompare(b)
+      })
+      .join(',')
+    return cyrb53(trackElementsStringRepresentation).toString(16)
+  }
+
+  public validate(authorTime: number) {
+    this.validationId = this.calculateValidationId()
+    this.trackTimes.author.set(authorTime)
+    this.#validated.set(true)
+    this.toLocalStorage()
+  }
+
+  public invalidate() {
+    this.#validated.set(false)
+    this.validationId = ''
     this.trackTimes.author.set(0)
     this.trackRespawns.author.set(0)
     this.toLocalStorage()
@@ -163,6 +199,7 @@ export class TrackData {
       trackData.trackRespawns.bronze.set(data.trackRespawns.bronze)
 
       trackData.#validated.set(data.validated)
+      trackData.validationId = data.validationId
 
       trackData.updateCheckpointCount()
 

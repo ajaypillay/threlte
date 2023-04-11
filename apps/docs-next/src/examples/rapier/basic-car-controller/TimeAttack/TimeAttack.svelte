@@ -4,13 +4,13 @@
   import TimeAttackFinished from './UI/TimeAttackFinished.svelte'
   import TimeAttackPaused from './UI/TimeAttackPaused.svelte'
   import TimeAttackUi from './UI/TimeAttackUi.svelte'
-  import TrackIntro from './UI/TrackIntro.svelte'
+  import TimeAttackIntro from './UI/TimeAttackIntro.svelte'
 </script>
 
 <CommonGamePlay>
   <TimeAttackPaused slot="ui-paused" />
 
-  <TrackIntro slot="ui-intro" />
+  <TimeAttackIntro slot="ui-intro" />
 
   <TimeAttackUi slot="ui-playing" />
 

@@ -12,7 +12,7 @@
   <Button
     size="small"
     on:click={() => {
-      trackData.setValidated(false)
+      trackData.invalidate()
     }}
   >
     Edit Track

@@ -1,6 +1,7 @@
 import type { CurrentWritable } from '@threlte/core'
 import { buildActions, createState, toCurrentReadable } from './utils'
 import { TrackData } from '../TrackData/TrackData'
+import { TrackRecord } from '../TrackRecord/TrackRecord'
 
 /**
  * -----------------------------------------------------
@@ -30,17 +31,19 @@ type GameType = 'time-attack' | 'track-editor'
 type GameState = {
   readonly gameType: CurrentWritable<GameType>
   readonly trackData: CurrentWritable<TrackData | undefined>
+  readonly trackRecord: CurrentWritable<TrackRecord | undefined>
   readonly paused: CurrentWritable<boolean>
-  /**
-   * The common current gameplay state.
-   * Every game type has its own state, but this is the common one.
-   */
   readonly common: {
     readonly state: CurrentWritable<'intro' | 'count-in' | 'playing' | 'finished'>
+    readonly showGhost: CurrentWritable<boolean>
     readonly time: CurrentWritable<number>
     readonly checkpointsReached: CurrentWritable<Set<string>>
     readonly lastCheckpoint: CurrentWritable<string | undefined>
     readonly finishReached: CurrentWritable<boolean>
+  }
+  readonly car: {
+    readonly position: CurrentWritable<[number, number, number]>
+    readonly quaternion: CurrentWritable<[number, number, number, number]>
   }
   readonly trackEditor: {
     readonly state: CurrentWritable<'editing' | 'validation'>
@@ -94,13 +97,19 @@ export const menuState = {
 const _gameState: GameState = {
   gameType: createState('time-attack'),
   trackData: createState(undefined),
+  trackRecord: createState(undefined),
   paused: createState(false),
   common: {
     state: createState('intro'),
+    showGhost: createState(true),
     time: createState(0),
     checkpointsReached: createState(new Set()),
     lastCheckpoint: createState(undefined),
     finishReached: createState(false)
+  },
+  car: {
+    position: createState([0, 0, 0]),
+    quaternion: createState([0, 0, 0, 0])
   },
   trackEditor: {
     state: createState('editing'),
@@ -116,13 +125,19 @@ const _gameState: GameState = {
 export const gameState = {
   gameType: toCurrentReadable(_gameState.gameType),
   trackData: toCurrentReadable(_gameState.trackData),
+  trackRecord: toCurrentReadable(_gameState.trackRecord),
   paused: toCurrentReadable(_gameState.paused),
   common: {
     state: toCurrentReadable(_gameState.common.state),
+    showGhost: toCurrentReadable(_gameState.common.showGhost),
     time: toCurrentReadable(_gameState.common.time),
     checkpointsReached: toCurrentReadable(_gameState.common.checkpointsReached),
     lastCheckpoint: toCurrentReadable(_gameState.common.lastCheckpoint),
     finishReached: toCurrentReadable(_gameState.common.finishReached)
+  },
+  car: {
+    position: toCurrentReadable(_gameState.car.position),
+    quaternion: toCurrentReadable(_gameState.car.quaternion)
   },
   trackEditor: {
     state: toCurrentReadable(_gameState.trackEditor.state),
@@ -193,6 +208,7 @@ export const actions = buildActions(
       _gameState.trackData.set(undefined)
       const trackData = await TrackData.fromServer(trackId)
       _gameState.trackData.set(trackData)
+      actions.loadTrackRecord()
       callback(trackData)
     },
 
@@ -201,6 +217,7 @@ export const actions = buildActions(
       _gameState.trackData.set(undefined)
       const trackData = TrackData.fromLocalStorage(trackId)
       _gameState.trackData.set(trackData)
+      actions.loadTrackRecord()
       callback(trackData)
     },
 
@@ -208,13 +225,48 @@ export const actions = buildActions(
       _appState.state.set('game')
       const trackData = TrackData.createEmpty()
       _gameState.trackData.set(trackData)
+      actions.loadTrackRecord()
       callback(trackData)
     },
 
     setTrackData: (trackData: TrackData, callback: (trackData: TrackData) => void) => {
       _appState.state.set('game')
       _gameState.trackData.set(trackData)
+      actions.loadTrackRecord()
       callback(trackData)
+    },
+
+    /**
+     * -----------------------------------------------------
+     * TrackRecord Actions
+     * -----------------------------------------------------
+     */
+
+    loadTrackRecord: () => {
+      if (!_gameState.trackData.current) {
+        return { invalid: 'No TrackData loaded' }
+      }
+      const trackRecord = TrackRecord.fromLocalStorage(_gameState.trackData.current)
+      _gameState.trackRecord.set(trackRecord)
+    },
+
+    setTrackRecord: (trackRecord: TrackRecord) => {
+      if (!_gameState.trackData.current) {
+        return { invalid: 'No TrackData loaded' }
+      }
+      if (
+        TrackRecord.makeTrackRecordId(_gameState.trackData.current) !== trackRecord.trackRecordId
+      ) {
+        return { invalid: 'TrackRecord does not match TrackData' }
+      }
+      if (
+        _gameState.trackRecord?.current?.time.current !== undefined &&
+        _gameState.trackRecord?.current?.time.current < trackRecord.time.current
+      ) {
+        return { invalid: 'TrackRecord time is slower than current record' }
+      }
+      _gameState.trackRecord.set(trackRecord)
+      trackRecord.saveToLocalStorage()
     },
 
     /**
@@ -296,6 +348,16 @@ export const actions = buildActions(
       }
     },
 
+    setCarPosition: (position: [number, number, number]) => {
+      _gameState.car.position.set(position)
+      return { debug: false }
+    },
+
+    setCarQuaternion: (quaternion: [number, number, number, number]) => {
+      _gameState.car.quaternion.set(quaternion)
+      return { debug: false }
+    },
+
     goToIntro: () => {
       actions.resetGameplay()
       _gameState.common.state.set('intro')
@@ -324,6 +386,10 @@ export const actions = buildActions(
       actions.clearCheckpoints()
       actions.clearFinish()
       actions.resetCar()
+    },
+
+    setShowGhost: (show: boolean) => {
+      _gameState.common.showGhost.set(show)
     },
 
     /**

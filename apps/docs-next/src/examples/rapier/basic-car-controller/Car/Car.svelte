@@ -8,6 +8,7 @@
   import { sunPos } from '../config'
   import { actions, gameState } from '../stores/app'
   import { PerspectiveCamera, Quaternion, Vector3 } from 'three'
+  import CarState from './CarState.svelte'
 
   let carCam: PerspectiveCamera
   let freezeCam: PerspectiveCamera
@@ -104,11 +105,13 @@
   </T.Group>
 
   <svelte:fragment let:carState>
+    <CarState {carState} />
+
     <T.DirectionalLight
       intensity={0.4}
-      position.x={carState.worldPosition.x + sunPos[0] * 10}
-      position.y={carState.worldPosition.y + sunPos[1] * 10}
-      position.z={carState.worldPosition.z + sunPos[0] * 10}
+      position.x={carState.worldPosition[0] + sunPos[0] * 10}
+      position.y={carState.worldPosition[1] + sunPos[1] * 10}
+      position.z={carState.worldPosition[2] + sunPos[0] * 10}
       shadow.camera.left={-10}
       shadow.camera.right={10}
       shadow.camera.top={10}
@@ -119,9 +122,9 @@
       <Portal object={scene}>
         <T
           is={ref.target}
-          position.x={carState.worldPosition.x}
-          position.y={carState.worldPosition.y}
-          position.z={carState.worldPosition.z}
+          position.x={carState.worldPosition[0]}
+          position.y={carState.worldPosition[1]}
+          position.z={carState.worldPosition[2]}
         />
       </Portal>
     </T.DirectionalLight>

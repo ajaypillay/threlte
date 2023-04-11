@@ -356,7 +356,8 @@
   export let carState: CarState = {
     isForward: false,
     isBraking: false,
-    worldPosition: new Vector3(),
+    worldPosition: [0, 0, 0],
+    worldQuaternion: [0, 0, 0, 1],
     steeringAngle: 0,
     velocity: 0
   }
@@ -891,11 +892,18 @@
       rigidBody.setLinearDamping(finalLinearDamping)
     }
 
-    carState.worldPosition.set(
+    carState.worldPosition = [
       currentWorldPosition.x,
       currentWorldPosition.y,
       currentWorldPosition.z
-    )
+    ]
+
+    carState.worldQuaternion = [
+      currentWorldRotation.x,
+      currentWorldRotation.y,
+      currentWorldRotation.z,
+      currentWorldRotation.w
+    ]
 
     carState.velocity = velocity
 

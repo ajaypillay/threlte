@@ -1,10 +1,9 @@
-import type { Vector3 } from 'three'
-
 export type CarState = {
   isForward: boolean
   isBraking: boolean
   velocity: number
-  worldPosition: Vector3
+  worldPosition: [number, number, number]
+  worldQuaternion: [number, number, number, number]
   /**
    * in radians
    */

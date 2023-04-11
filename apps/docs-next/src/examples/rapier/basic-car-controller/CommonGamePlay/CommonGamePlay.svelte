@@ -1,20 +1,22 @@
 <script lang="ts">
+  import { useFrame } from '@threlte/core'
   import { derived } from 'svelte/store'
   import Car from '../Car/Car.svelte'
-  import { actions, appState, gameState } from '../stores/app'
-  import { useKeyDown } from '../utils/useKeyDown'
-  import CountIn from './UI/CountIn.svelte'
-  import TrackViewer from '../TrackViewer/TrackViewer.svelte'
-  import TrackElementTransform from '../TrackViewer/TrackElementTransform.svelte'
   import TrackElement from '../TrackViewer/TrackElement.svelte'
-  import { useGameIsPausable } from '../utils/useGameIsPausable'
-  import { useFrame } from '@threlte/core'
+  import TrackElementTransform from '../TrackViewer/TrackElementTransform.svelte'
+  import TrackViewer from '../TrackViewer/TrackViewer.svelte'
   import UiWrapper from '../UI/UiWrapper.svelte'
+  import { actions, appState, gameState } from '../stores/app'
+  import { useGameIsPausable } from '../utils/useGameIsPausable'
+  import { useKeyDown } from '../utils/useKeyDown'
+  import TrackRecord from './TrackRecord.svelte'
+  import CountIn from './UI/CountIn.svelte'
+  import Ghost from './Ghost.svelte'
 
   const { visibility } = appState
   const { common, paused, trackData } = gameState
 
-  const { state, finishReached } = common
+  const { state, finishReached, showGhost } = common
 
   const carActive = derived([state, visibility, paused], ([state, visibility, paused]) => {
     if (visibility === 'hidden') return false
@@ -31,6 +33,11 @@
     if ($state === 'playing') {
       actions.goToCountIn()
     }
+  })
+
+  useKeyDown('g', () => {
+    const show = !$showGhost
+    actions.setShowGhost(show)
   })
 
   useGameIsPausable()
@@ -72,6 +79,14 @@
       <TrackElement {trackElement} />
     </TrackElementTransform>
   </TrackViewer>
+{/if}
+
+<!-- GAME RECORDER -->
+<TrackRecord />
+
+<!-- GHOST -->
+{#if $showGhost}
+  <Ghost />
 {/if}
 
 <!-- CAR -->

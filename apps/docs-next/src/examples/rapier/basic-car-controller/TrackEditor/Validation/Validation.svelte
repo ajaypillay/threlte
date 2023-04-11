@@ -11,11 +11,7 @@
 
   actions.use('finishReached', () => {
     const time = gameState.common.time.current
-    trackData.setValidated(true)
-    if (trackData.trackTimes.author.current === 0 || time < trackData.trackTimes.author.current) {
-      trackData.trackTimes.author.set(time)
-    }
-    trackData.toLocalStorage(0)
+    trackData.validate(time)
   })
 </script>
 
