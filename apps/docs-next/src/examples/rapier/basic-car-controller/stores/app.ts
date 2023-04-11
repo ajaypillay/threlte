@@ -36,21 +36,16 @@ type GameState = {
    * Every game type has its own state, but this is the common one.
    */
   readonly common: {
+    readonly state: CurrentWritable<'intro' | 'count-in' | 'playing' | 'finished'>
     readonly time: CurrentWritable<number>
     readonly checkpointsReached: CurrentWritable<Set<string>>
     readonly lastCheckpoint: CurrentWritable<string | undefined>
     readonly finishReached: CurrentWritable<boolean>
   }
-  readonly timeAttack: {
-    readonly state: CurrentWritable<'track-intro' | 'count-in' | 'playing' | 'finished'>
-  }
   readonly trackEditor: {
     readonly state: CurrentWritable<'editing' | 'validation'>
     readonly editing: {
       readonly view: CurrentWritable<'car' | 'orbit'>
-    }
-    readonly validation: {
-      readonly state: CurrentWritable<'intro' | 'count-in' | 'validation' | 'finished'>
     }
   }
 }
@@ -101,21 +96,16 @@ const _gameState: GameState = {
   trackData: createState(undefined),
   paused: createState(false),
   common: {
+    state: createState('intro'),
     time: createState(0),
     checkpointsReached: createState(new Set()),
     lastCheckpoint: createState(undefined),
     finishReached: createState(false)
   },
-  timeAttack: {
-    state: createState('track-intro')
-  },
   trackEditor: {
     state: createState('editing'),
     editing: {
       view: createState('orbit')
-    },
-    validation: {
-      state: createState('intro')
     }
   }
 }
@@ -128,21 +118,16 @@ export const gameState = {
   trackData: toCurrentReadable(_gameState.trackData),
   paused: toCurrentReadable(_gameState.paused),
   common: {
+    state: toCurrentReadable(_gameState.common.state),
     time: toCurrentReadable(_gameState.common.time),
     checkpointsReached: toCurrentReadable(_gameState.common.checkpointsReached),
     lastCheckpoint: toCurrentReadable(_gameState.common.lastCheckpoint),
     finishReached: toCurrentReadable(_gameState.common.finishReached)
   },
-  timeAttack: {
-    state: toCurrentReadable(_gameState.timeAttack.state)
-  },
   trackEditor: {
     state: toCurrentReadable(_gameState.trackEditor.state),
     editing: {
       view: toCurrentReadable(_gameState.trackEditor.editing.view)
-    },
-    validation: {
-      state: toCurrentReadable(_gameState.trackEditor.validation.state)
     }
   }
 }
@@ -276,16 +261,29 @@ export const actions = buildActions(
     },
 
     finishReached: () => {
+      /**
+       * If the player hasn't reached all checkpoints, the finish is invalid.
+       */
       if (
         _gameState.trackData.current?.checkpointCount.current !==
         _gameState.common.checkpointsReached.current.size
       ) {
         return { invalid: true }
       }
+
+      /**
+       * If the finish has already been reached, the finish is invalid.
+       */
       if (_gameState.common.finishReached.current) {
         return { invalid: true }
       }
+
       _gameState.common.finishReached.set(true)
+
+      /**
+       * Set the game state to finished.
+       */
+      _gameState.common.state.set('finished')
     },
 
     clearFinish: () => {
@@ -296,6 +294,21 @@ export const actions = buildActions(
       if (_gameState.common.finishReached.current) {
         return { invalid: true }
       }
+    },
+
+    goToIntro: () => {
+      actions.resetGameplay()
+      _gameState.common.state.set('intro')
+    },
+
+    goToCountIn: () => {
+      actions.resetGameplay()
+      _gameState.common.state.set('count-in')
+    },
+
+    startPlaying: () => {
+      actions.resetGameplay()
+      _gameState.common.state.set('playing')
     },
 
     /**
@@ -322,46 +335,7 @@ export const actions = buildActions(
       _appState.state.set('game')
       _gameState.paused.set(false)
       _gameState.gameType.set('time-attack')
-      actions.timeAttackStartIntro()
-    },
-
-    timeAttackStartIntro: () => {
-      _gameState.timeAttack.state.set('track-intro')
-      actions.resetGameplay()
-    },
-
-    timeAttackStartCountIn: () => {
-      _gameState.timeAttack.state.set('count-in')
-      actions.resetGameplay()
-    },
-
-    timeAttackStartPlaying: () => {
-      _gameState.timeAttack.state.set('playing')
-    },
-
-    timeAttackFinish: () => {
-      _gameState.timeAttack.state.set('finished')
-    },
-
-    /**
-     * After finishing a track, the user may restart the track.
-     * We begin *before* the count-in.
-     */
-    resetTimeAttack: () => {
-      actions.timeAttackStartIntro()
-    },
-
-    /**
-     * While playing the track, the user may soft-reset the track.
-     * We begin *during* the count-in, so the game play is not affected.
-     */
-    softResetTimeAttack: () => {
-      // a soft reset can only be done while playing
-      // and not while paused
-      if (_gameState.paused.current) {
-        return { invalid: true }
-      }
-      actions.timeAttackStartCountIn()
+      actions.goToIntro()
     },
 
     /**
@@ -384,26 +358,7 @@ export const actions = buildActions(
 
     startTrackValidation: () => {
       _gameState.trackEditor.state.set('validation')
-      _gameState.trackEditor.validation.state.set('intro')
-    },
-
-    startTrackValidationCountIn: () => {
-      _gameState.trackEditor.validation.state.set('count-in')
-    },
-
-    startTrackValidationPlaying: () => {
-      _gameState.trackEditor.validation.state.set('validation')
-      actions.resetGameplay()
-    },
-
-    trackValidationFinished: (authorTime: number) => {
-      _gameState.trackEditor.validation.state.set('finished')
-      _gameState.trackData.current?.setValidated(true)
-      _gameState.trackData.current?.timeAttackTrackTimes.author.set(authorTime)
-    },
-
-    cancelTrackValidation: () => {
-      actions.startTrackEditor()
+      actions.goToIntro()
     },
 
     pauseGame: () => {

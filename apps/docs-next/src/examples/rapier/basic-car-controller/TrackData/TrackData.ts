@@ -71,14 +71,14 @@ export class TrackElement {
   }
 }
 
-class TimeAttackTrackTimes {
+class TrackTimes {
   public author: JsonCurrentWritable<number> = jsonCurrentWritable(0)
   public gold: JsonCurrentWritable<number> = jsonCurrentWritable(0)
   public silver: JsonCurrentWritable<number> = jsonCurrentWritable(0)
   public bronze: JsonCurrentWritable<number> = jsonCurrentWritable(0)
 }
 
-class TrialTrackRespawns {
+class TrackRespawns {
   public author: JsonCurrentWritable<number> = jsonCurrentWritable(0)
   public gold: JsonCurrentWritable<number> = jsonCurrentWritable(0)
   public silver: JsonCurrentWritable<number> = jsonCurrentWritable(0)
@@ -93,14 +93,16 @@ export class TrackData {
   #trackElements: JsonCurrentWritable<TrackElement[]> = jsonCurrentWritable([])
   trackElements: JsonCurrentReadable<TrackElement[]> = jsonCurrentReadable(this.#trackElements)
 
-  timeAttackTrackTimes = new TimeAttackTrackTimes()
-  trialTrackRespawns = new TrialTrackRespawns()
+  trackTimes = new TrackTimes()
+  trackRespawns = new TrackRespawns()
 
   #validated: JsonCurrentWritable<boolean> = jsonCurrentWritable(false)
   validated: JsonCurrentReadable<boolean> = jsonCurrentReadable(this.#validated)
 
   public setValidated(validated: boolean) {
     this.#validated.set(validated)
+    this.trackTimes.author.set(0)
+    this.trackRespawns.author.set(0)
     this.toLocalStorage()
   }
 
@@ -150,15 +152,15 @@ export class TrackData {
         data.trackElements.map((trackElement: any) => TrackElement.fromJSON(trackElement))
       )
 
-      trackData.timeAttackTrackTimes.author.set(data.timeAttackTrackTimes.author)
-      trackData.timeAttackTrackTimes.gold.set(data.timeAttackTrackTimes.gold)
-      trackData.timeAttackTrackTimes.silver.set(data.timeAttackTrackTimes.silver)
-      trackData.timeAttackTrackTimes.bronze.set(data.timeAttackTrackTimes.bronze)
+      trackData.trackTimes.author.set(data.trackTimes.author)
+      trackData.trackTimes.gold.set(data.trackTimes.gold)
+      trackData.trackTimes.silver.set(data.trackTimes.silver)
+      trackData.trackTimes.bronze.set(data.trackTimes.bronze)
 
-      trackData.trialTrackRespawns.author.set(data.trialTrackRespawns.author)
-      trackData.trialTrackRespawns.gold.set(data.trialTrackRespawns.gold)
-      trackData.trialTrackRespawns.silver.set(data.trialTrackRespawns.silver)
-      trackData.trialTrackRespawns.bronze.set(data.trialTrackRespawns.bronze)
+      trackData.trackRespawns.author.set(data.trackRespawns.author)
+      trackData.trackRespawns.gold.set(data.trackRespawns.gold)
+      trackData.trackRespawns.silver.set(data.trackRespawns.silver)
+      trackData.trackRespawns.bronze.set(data.trackRespawns.bronze)
 
       trackData.#validated.set(data.validated)
 

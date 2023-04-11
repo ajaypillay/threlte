@@ -13,17 +13,16 @@
   let freezeCam: PerspectiveCamera
 
   let respawnCar: () => void
+
   export let debug = false
   export let active = false
   export let useCarCamera = true
   export let volume = 1
 
-  export const respawn = () => {
-    respawnCar?.()
-  }
-
   // The car is respawning on certain events
-  actions.use('resetCar', respawn)
+  actions.use('resetCar', () => {
+    respawnCar?.()
+  })
 
   const { scene } = useThrelte()
 

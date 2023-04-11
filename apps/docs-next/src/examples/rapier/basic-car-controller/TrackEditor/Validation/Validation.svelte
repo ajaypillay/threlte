@@ -1,69 +1,33 @@
 <script lang="ts">
-  import Car from '../../Car/Car.svelte'
-  import GameTime from '../../Common/GameTime.svelte'
+  import CommonGamePlay from '../../CommonGamePlay/CommonGamePlay.svelte'
   import type { TrackData } from '../../TrackData/TrackData'
-  import TrackElement from '../../TrackViewer/TrackElement.svelte'
-  import TrackElementTransform from '../../TrackViewer/TrackElementTransform.svelte'
-  import TrackViewer from '../../TrackViewer/TrackViewer.svelte'
-  import CountIn from '../../UI/Common/CountIn.svelte'
   import { actions, gameState } from '../../stores/app'
-  import { useGameIsPausable } from '../../utils/useGameIsPausable'
-  import { useKeyDown } from '../../utils/useKeyDown'
   import ValidationFinished from './UI/ValidationFinished.svelte'
   import ValidationInProgress from './UI/ValidationInProgress.svelte'
   import ValidationIntro from './UI/ValidationIntro.svelte'
   import ValidationPaused from './UI/ValidationPaused.svelte'
 
-  const { paused, trackEditor, common } = gameState
-
-  const { validation } = trackEditor
-  const { state } = validation
-
   export let trackData: TrackData
 
-  $: carActive = ($state === 'validation' || $state === 'finished') && !$paused
-
-  useGameIsPausable()
-
   actions.use('finishReached', () => {
-    actions.trackValidationFinished(common.time.current)
-  })
-
-  useKeyDown('Enter', () => {
-    if ($state === 'validation' && !$paused) {
-      actions.resetGameplay()
+    const time = gameState.common.time.current
+    trackData.setValidated(true)
+    if (trackData.trackTimes.author.current === 0 || time < trackData.trackTimes.author.current) {
+      trackData.trackTimes.author.set(time)
     }
+    trackData.toLocalStorage(0)
   })
 </script>
 
-{#if $paused}
-  <ValidationPaused />
-{:else}
-  <!-- UI -->
-  {#if $state === 'intro'}
-    <ValidationIntro />
-  {:else if $state === 'count-in'}
-    <CountIn
-      on:countindone={() => {
-        actions.startTrackValidationPlaying()
-      }}
-    />
-  {:else if $state === 'validation'}
-    <ValidationInProgress />
-  {:else if $state === 'finished'}
-    <ValidationFinished {trackData} />
-  {/if}
-{/if}
+<CommonGamePlay>
+  <ValidationPaused slot="ui-paused" />
 
-<GameTime>
-  <TrackViewer
-    let:trackElement
+  <ValidationIntro slot="ui-intro" />
+
+  <ValidationInProgress slot="ui-playing" />
+
+  <ValidationFinished
     {trackData}
-  >
-    <TrackElementTransform {trackElement}>
-      <TrackElement {trackElement} />
-    </TrackElementTransform>
-  </TrackViewer>
-</GameTime>
-
-<Car active={carActive} />
+    slot="ui-finished"
+  />
+</CommonGamePlay>

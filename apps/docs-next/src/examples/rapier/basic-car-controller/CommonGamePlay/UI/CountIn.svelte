@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onDestroy } from 'svelte'
-  import UiWrapper from '../UiWrapper.svelte'
+  import UiWrapper from '../../UI/UiWrapper.svelte'
 
   const dispatch = createEventDispatcher<{
     countindone: void
