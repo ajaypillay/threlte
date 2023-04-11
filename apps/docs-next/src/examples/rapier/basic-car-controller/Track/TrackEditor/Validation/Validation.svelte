@@ -3,6 +3,7 @@
   import CountIn from '../../../UI/Common/CountIn.svelte'
   import { actions, gameState } from '../../../stores/app'
   import { useGameIsPausable } from '../../../useGameIsPausable'
+  import { useKeyDown } from '../../../useKeyDown'
   import GameTime from '../../GameTime.svelte'
   import type { TrackData } from '../../TrackData/TrackData'
   import TrackElement from '../../TrackViewer/TrackElement.svelte'
@@ -26,6 +27,12 @@
 
   actions.use('finishReached', () => {
     actions.trackValidationFinished(common.time.current)
+  })
+
+  useKeyDown('Enter', () => {
+    if ($state === 'validation') {
+      actions.resetGameplay()
+    }
   })
 </script>
 
