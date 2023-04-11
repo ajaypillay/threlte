@@ -8,7 +8,7 @@
     actions.goToMainMenu()
   })
 
-  const userTrackIds = TrackData.listLocalStorageTrackIds()
+  const userTrackIds = TrackData.localStorageTrackIds
 
   let numberOfUnnamedTracks = 0
 
@@ -31,7 +31,7 @@
     <button
       on:click={() => {
         actions.loadEmptyTrackData((trackData) => {
-          const trackDatas = userTrackIds
+          const trackDatas = $userTrackIds
             .map((userTrackId) => {
               return TrackData.fromLocalStorage(userTrackId)
             })
@@ -50,7 +50,7 @@
       Create Track
     </button>
 
-    {#each userTrackIds as userTrackId}
+    {#each $userTrackIds as userTrackId}
       {@const trackData = TrackData.fromLocalStorage(userTrackId)}
       {#if trackData?.validated.current}
         <button
@@ -71,6 +71,14 @@
         }}
       >
         Edit Track {getTrackName(trackData)}
+      </button>
+
+      <button
+        on:click={() => {
+          trackData?.removeFromLocalStorage()
+        }}
+      >
+        Delete Track {getTrackName(trackData)}
       </button>
     {/each}
   </div>

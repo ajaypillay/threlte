@@ -2,6 +2,7 @@ import { Readable, derived } from 'svelte/store'
 import type { Vector3Tuple } from 'three'
 import type { trackElementPrototypes } from '../Elements/elements'
 import { JsonCurrentWritable, jsonCurrentWritable } from '../jsonCurrentWritable'
+import { CurrentWritable, currentWritable } from '@threlte/core'
 
 type JsonCurrentReadable<T> = Readable<T> & {
   current: T
@@ -189,6 +190,16 @@ export class TrackData {
     return undefined
   }
 
+  public static removeFromLocalStorage(trackId: string) {
+    localStorage.removeItem(trackId)
+    TrackData.#localStorageTrackIdsNeedUpdate.set(true)
+  }
+
+  public removeFromLocalStorage() {
+    localStorage.removeItem(this.trackId)
+    TrackData.#localStorageTrackIdsNeedUpdate.set(true)
+  }
+
   #timeout: ReturnType<typeof setTimeout> | undefined
   public toLocalStorage(debounce: number | false = 100) {
     if (this.#timeout) {
@@ -202,6 +213,19 @@ export class TrackData {
       })
     }
   }
+
+  static #localStorageTrackIdsNeedUpdate = currentWritable(true)
+  public static localStorageTrackIds = derived<CurrentWritable<boolean>, string[]>(
+    this.#localStorageTrackIdsNeedUpdate,
+    (localStorageTrackIdsNeedUpdate, set) => {
+      if (localStorageTrackIdsNeedUpdate) {
+        this.#localStorageTrackIdsNeedUpdate.set(false)
+      } else {
+        const localStorageKeys = Object.keys(localStorage)
+        set(localStorageKeys.filter((key) => key.startsWith('Track-')))
+      }
+    }
+  )
 
   public static listLocalStorageTrackIds() {
     const localStorageKeys = Object.keys(localStorage)
