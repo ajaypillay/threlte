@@ -30,7 +30,7 @@
   })
 
   useKeyDown('Enter', () => {
-    if ($state === 'validation') {
+    if ($state === 'validation' && !$paused) {
       actions.resetGameplay()
     }
   })

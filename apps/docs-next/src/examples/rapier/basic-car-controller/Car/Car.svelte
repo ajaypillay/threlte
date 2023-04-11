@@ -31,7 +31,7 @@
 
   $: freezeCamera = useCarCamera && $finishReached
 
-  $: if (freezeCamera) {
+  $: if (freezeCamera && carCam && freezeCam) {
     carCam.updateMatrix()
     const carCamWorldPosition = new Vector3()
     carCam.getWorldPosition(carCamWorldPosition)
