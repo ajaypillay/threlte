@@ -47,7 +47,7 @@
         })
       }}
     >
-      Create Track
+      Create New Track
     </button>
 
     {#each $userTrackIds as userTrackId}
