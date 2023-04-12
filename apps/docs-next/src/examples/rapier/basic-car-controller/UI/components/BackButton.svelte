@@ -2,10 +2,7 @@
   import Button from './Button.svelte'
 </script>
 
-<Button
-  on:click
-  class="flex flex-row gap-2 items-center"
->
+<Button on:click>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="72"

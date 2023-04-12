@@ -65,7 +65,11 @@
   </Canvas>
 
   <div
-    class="absolute top-0 left-0 w-full h-full  z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none"
-    id="car-ui-portal-target"
-  />
+    class="absolute top-0 left-0 w-full h-full  z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none"
+  >
+    <div
+      class="relative w-full h-full top-0 left-0"
+      id="car-ui-portal-target"
+    />
+  </div>
 </div>
