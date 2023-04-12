@@ -24,6 +24,7 @@
 
   export let active = true
   export let volume = 1
+  export let useAudio = true
 
   const { world } = useRapier()
 
@@ -920,13 +921,15 @@
   })
 </script>
 
-<Audio
-  src="/assets/basic-vehicle-controller/engine6.wav"
-  loop
-  autoplay
-  volume={_volume}
-  {playbackRate}
-/>
+{#if useAudio}
+  <Audio
+    src="/assets/basic-vehicle-controller/engine6.wav"
+    loop
+    autoplay
+    volume={_volume}
+    {playbackRate}
+  />
+{/if}
 
 {#each impulseVisualisations as impulseVisualisation (impulseVisualisation.id)}
   <Impulse

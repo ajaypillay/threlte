@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Canvas } from '@threlte/core'
   import { Debug, World } from '@threlte/rapier'
-  import Loader from './Loader.svelte'
+  import Loader from './Loader/Loader.svelte'
   import Scene from './Scene.svelte'
   import {
     appState,
@@ -65,11 +65,7 @@
   </Canvas>
 
   <div
-    class="absolute top-0 left-0 w-full h-full  z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none"
-  >
-    <div
-      class="relative w-full h-full top-0 left-0"
-      id="car-ui-portal-target"
-    />
-  </div>
+    class="absolute top-0 left-0 w-full h-full z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none"
+    id="car-ui-portal-target"
+  />
 </div>

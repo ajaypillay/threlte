@@ -6,13 +6,18 @@
   import { tweened } from 'svelte/motion'
   import { Color, PerspectiveCamera } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
-  import CameraFade from '../utils/CameraFade.svelte'
   import MuscleCar from '../Car/Models/MuscleCar.svelte'
   import MuscleCarWheel from '../Car/Models/MuscleCarWheel.svelte'
   import { actions, appState } from '../stores/app'
+  import CameraFade from '../utils/CameraFade.svelte'
   import Box from './Box.svelte'
+  import Sound from '../Sound.svelte'
+  // import { useAudioProvider } from '../AudioProvider.svelte'
 
-  const { state } = appState
+  const { state, options } = appState
+
+  const { shadows } = options.video
+  const { music } = options.audio
 
   let camera: PerspectiveCamera
 
@@ -134,6 +139,13 @@
   const { scene } = useThrelte()
 </script>
 
+{#if $music}
+  <Sound
+    sound="menuBackground"
+    autostop
+  />
+{/if}
+
 <T.Fog
   near={10}
   far={80}
@@ -204,7 +216,7 @@
 <T.DirectionalLight
   position={[5, 5, 5]}
   intensity={1}
-  castShadow
+  castShadow={$shadows}
 />
 
 <T.Group rotation.y={$rotationY}>

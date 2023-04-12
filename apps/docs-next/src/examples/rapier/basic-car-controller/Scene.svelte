@@ -5,11 +5,13 @@
   import { tick } from 'svelte'
   import { derived } from 'svelte/store'
   import Env from './Common/Env.svelte'
+  import Game from './Game/Game.svelte'
   import IntroAndMenuBackground from './Intro/IntroAndMenuBackground.svelte'
   import Menu from './Menu/Menu.svelte'
+  import StartPrompt from './UI/StartPrompt.svelte'
   import { appState } from './stores/app'
   import { useKeyPress } from './utils/useKeyPress'
-  import Game from './Game/Game.svelte'
+  import AudioProvider from './AudioProvider.svelte'
 
   const { state, visibility } = appState
 
@@ -56,15 +58,23 @@
 <!-- We're only using global audio, so a global Audio Listener is fine -->
 <AudioListener masterVolume={$masterVolume} />
 
-<!-- All scenes use the same environment -->
-<Env />
+<AudioProvider>
+  <!-- All scenes use the same environment -->
+  {#if $state !== 'start-prompt'}
+    <Env />
+  {/if}
 
-{#if $state === 'intro' || $state === 'menu'}
-  <IntroAndMenuBackground />
-{/if}
+  {#if $state === 'start-prompt'}
+    <StartPrompt />
+  {/if}
 
-{#if $state === 'menu'}
-  <Menu />
-{:else if $state === 'game'}
-  <Game />
-{/if}
+  {#if $state === 'intro' || $state === 'menu'}
+    <IntroAndMenuBackground />
+  {/if}
+
+  {#if $state === 'menu'}
+    <Menu />
+  {:else if $state === 'game'}
+    <Game />
+  {/if}
+</AudioProvider>

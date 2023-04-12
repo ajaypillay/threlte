@@ -17,9 +17,19 @@ import { TrackRecord } from '../TrackRecord/TrackRecord'
  */
 
 type AppState = {
-  readonly state: CurrentWritable<'intro' | 'menu' | 'game'>
+  readonly state: CurrentWritable<'start-prompt' | 'intro' | 'menu' | 'game'>
   readonly visibility: CurrentWritable<'visible' | 'hidden'>
   readonly debug: CurrentWritable<boolean>
+  readonly options: {
+    readonly audio: {
+      readonly music: CurrentWritable<boolean>
+      readonly sfx: CurrentWritable<boolean>
+    }
+    readonly video: {
+      readonly shadows: CurrentWritable<boolean>
+      readonly postprocessing: CurrentWritable<boolean>
+    }
+  }
 }
 
 type MenuState = {
@@ -59,9 +69,19 @@ type GameState = {
  * -----------------------------------------------------
  */
 const _appState: AppState = {
-  state: createState('intro'),
+  state: createState('start-prompt'),
   visibility: createState('visible'),
-  debug: createState(false)
+  debug: createState(false),
+  options: {
+    audio: {
+      music: createState(true),
+      sfx: createState(true)
+    },
+    video: {
+      shadows: createState(true),
+      postprocessing: createState(true)
+    }
+  }
 }
 
 /**
@@ -70,7 +90,17 @@ const _appState: AppState = {
 export const appState = {
   state: toCurrentReadable(_appState.state),
   visibility: toCurrentReadable(_appState.visibility),
-  debug: toCurrentReadable(_appState.debug)
+  debug: toCurrentReadable(_appState.debug),
+  options: {
+    audio: {
+      music: toCurrentReadable(_appState.options.audio.music),
+      sfx: toCurrentReadable(_appState.options.audio.sfx)
+    },
+    video: {
+      shadows: toCurrentReadable(_appState.options.video.shadows),
+      postprocessing: toCurrentReadable(_appState.options.video.postprocessing)
+    }
+  }
 }
 
 /**
@@ -167,11 +197,80 @@ export const actions = buildActions(
       _appState.visibility.set(visibility)
     },
 
+    enableMusic: () => {
+      _appState.options.audio.music.set(true)
+    },
+
+    disableMusic: () => {
+      _appState.options.audio.music.set(false)
+    },
+
+    setMusic: (music: boolean) => {
+      _appState.options.audio.music.set(music)
+    },
+
+    toggleMusic: () => {
+      _appState.options.audio.music.update((music) => !music)
+    },
+
+    enableSfx: () => {
+      _appState.options.audio.sfx.set(true)
+    },
+
+    disableSfx: () => {
+      _appState.options.audio.sfx.set(false)
+    },
+
+    setSfx: (sfx: boolean) => {
+      _appState.options.audio.sfx.set(sfx)
+    },
+
+    toggleSfx: () => {
+      _appState.options.audio.sfx.update((sfx) => !sfx)
+    },
+
+    enableShadows: () => {
+      _appState.options.video.shadows.set(true)
+    },
+
+    disableShadows: () => {
+      _appState.options.video.shadows.set(false)
+    },
+
+    setShadows: (shadows: boolean) => {
+      _appState.options.video.shadows.set(shadows)
+    },
+
+    toggleShadows: () => {
+      _appState.options.video.shadows.update((shadows) => !shadows)
+    },
+
+    enablePostprocessing: () => {
+      _appState.options.video.postprocessing.set(true)
+    },
+
+    disablePostprocessing: () => {
+      _appState.options.video.postprocessing.set(false)
+    },
+
+    setPostprocessing: (postprocessing: boolean) => {
+      _appState.options.video.postprocessing.set(postprocessing)
+    },
+
+    togglePostprocessing: () => {
+      _appState.options.video.postprocessing.update((postprocessing) => !postprocessing)
+    },
+
     /**
      * -----------------------------------------------------
      * Menu Actions
      * -----------------------------------------------------
      */
+    goToAppIntro: () => {
+      _appState.state.set('menu')
+      _appState.state.set('intro')
+    },
+
     goToMainMenu: () => {
       _appState.state.set('menu')
       _menuState.state.set('main')

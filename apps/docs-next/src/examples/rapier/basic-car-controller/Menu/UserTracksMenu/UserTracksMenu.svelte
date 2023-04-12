@@ -11,7 +11,11 @@
   import { useKeyDown } from '../../utils/useKeyDown'
 
   useKeyDown('Escape', () => {
-    actions.goToMainMenu()
+    if (selectedTrackId) {
+      selectedTrackId = undefined
+    } else {
+      actions.goToMainMenu()
+    }
   })
 
   const userTrackIds = TrackData.localStorageTrackIds
