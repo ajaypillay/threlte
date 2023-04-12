@@ -121,7 +121,7 @@
         shadow.camera.right={10}
         shadow.camera.top={10}
         shadow.camera.bottom={-10}
-        castShados
+        castShadow
         let:ref
       >
         <Portal object={scene}>

@@ -141,8 +141,9 @@
 
 {#if $music}
   <Sound
-    sound="menuBackground"
+    sound="menuBackground3"
     autostop
+    volume={0.5}
   />
 {/if}
 

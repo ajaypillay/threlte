@@ -4,13 +4,18 @@
 
   export let sound: Sound
   export let autostop = false
+  export let volume = 1
+  export let detune = 0
 
   const { playAudio } = useAudioProvider()
 
   let node: AudioBufferSourceNode
 
   onMount(() => {
-    node = playAudio(sound)
+    node = playAudio(sound, {
+      volume,
+      detune
+    })
   })
 
   onDestroy(() => {

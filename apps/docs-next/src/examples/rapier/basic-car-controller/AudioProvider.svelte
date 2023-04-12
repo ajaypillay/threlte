@@ -7,7 +7,10 @@
 		buttonClick: '/assets/basic-vehicle-controller/sfx/button-click.mp3',
 		buttonHover: '/assets/basic-vehicle-controller/sfx/button-hover.mp3',
 		engine: '/assets/basic-vehicle-controller/engine6.wav',
-		menuBackground: '/assets/basic-vehicle-controller/music/Makaih Beats - Reflection.mp3'
+		menuBackground: '/assets/basic-vehicle-controller/music/Makaih Beats - Reflection.mp3',
+		menuBackground2: '/assets/basic-vehicle-controller/music/mike-gora-manic-114815.mp3',
+		menuBackground3: '/assets/basic-vehicle-controller/music/let-the-games-begin-21858.mp3',
+
 	}
 
 	export type Sound = keyof typeof sounds

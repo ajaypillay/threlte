@@ -9,6 +9,7 @@
   import { actions } from '../../stores/app'
   import { formatTime } from '../../utils/formatters'
   import { useKeyDown } from '../../utils/useKeyDown'
+  import JSZip from 'jszip'
 
   useKeyDown('Escape', () => {
     if (selectedTrackId) {
@@ -40,6 +41,21 @@
   const selectTrack = (trackId: string) => {
     selectedTrackId = trackId
   }
+
+  let fileInputEl: HTMLInputElement
+
+  const handleImport = async (file: File) => {
+    const zip = await JSZip.loadAsync(file)
+    zip.forEach((path, file) => {
+      if (path === 'track.json') {
+        file.async('string').then((content) => {
+          const trackData = TrackData.fromJSON(content)
+          trackData?.toLocalStorage(0)
+          TrackData.updateLocalStorageTrackIds()
+        })
+      }
+    })
+  }
 </script>
 
 <UiWrapper>
@@ -56,37 +72,72 @@
 
       <p slot="center">USER TRACKS</p>
 
-      <Button
+      <div
         slot="right"
-        on:click={() => {
-          actions.loadEmptyTrackData((trackData) => {
-            const trackDatas = $userTrackIds
-              .map((userTrackId) => {
-                return TrackData.fromLocalStorage(userTrackId)
-              })
-              .filter(filterUndefined)
-
-            const trackNamesStartingWithUnnamed = trackDatas.filter((trackData) => {
-              return trackData.trackName.current.startsWith('Unnamed Track')
-            }).length
-
-            trackData.trackName.set(`Unnamed Track ${trackNamesStartingWithUnnamed + 1}`)
-
-            actions.startTrackEditor()
-          })
-        }}
+        class="flex flex-row gap-[2px]"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="72"
-          height="72"
-          viewBox="0 0 256 256"
-          ><path
-            d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"
-          /></svg
+        <input
+          bind:this={fileInputEl}
+          class="hidden"
+          type="file"
+          on:change={() => {
+            if (!fileInputEl) return
+            const selectedFile = fileInputEl.files?.[0]
+            if (!selectedFile || !selectedFile?.name.endsWith('.zip')) {
+              alert('Please select a .zip file')
+              return
+            }
+            handleImport(selectedFile)
+          }}
+        />
+        <Button
+          on:click={() => {
+            if (!fileInputEl) return
+            fileInputEl.click()
+          }}
         >
-        CREATE
-      </Button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="72"
+            height="72"
+            viewBox="0 0 256 256"
+            ><path
+              d="M216.49,199.51a12,12,0,0,1-17,17L128,145,56.49,216.49a12,12,0,0,1-17-17l80-80a12,12,0,0,1,17,0Zm-160-63L128,65l71.51,71.52a12,12,0,0,0,17-17l-80-80a12,12,0,0,0-17,0l-80,80a12,12,0,0,0,17,17Z"
+            /></svg
+          >
+          IMPORT
+        </Button>
+        <Button
+          on:click={() => {
+            actions.loadEmptyTrackData((trackData) => {
+              const trackDatas = $userTrackIds
+                .map((userTrackId) => {
+                  return TrackData.fromLocalStorage(userTrackId)
+                })
+                .filter(filterUndefined)
+
+              const trackNamesStartingWithUnnamed = trackDatas.filter((trackData) => {
+                return trackData.trackName.current.startsWith('Unnamed Track')
+              }).length
+
+              trackData.trackName.set(`Unnamed Track ${trackNamesStartingWithUnnamed + 1}`)
+
+              actions.startTrackEditor()
+            })
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="72"
+            height="72"
+            viewBox="0 0 256 256"
+            ><path
+              d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"
+            /></svg
+          >
+          CREATE
+        </Button>
+      </div>
     </TopBar>
 
     <div class="grid grid-cols-3 mt-[15px] gap-[15px] h-full min-h-0">

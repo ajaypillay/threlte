@@ -4,6 +4,7 @@ import { JsonCurrentWritable, jsonCurrentWritable } from '../utils/jsonCurrentWr
 import { CurrentWritable, currentWritable } from '@threlte/core'
 import type { trackElementPrototypes } from '../TrackElements/elements'
 import { cyrb53 } from '../utils/hash'
+import JSZip from 'jszip'
 
 type JsonCurrentReadable<T> = Readable<T> & {
   current: T
@@ -266,20 +267,25 @@ export class TrackData {
     }
   )
 
-  public static listLocalStorageTrackIds() {
-    const localStorageKeys = Object.keys(localStorage)
-    return localStorageKeys.filter((key) => key.startsWith('Track-'))
+  public static updateLocalStorageTrackIds() {
+    this.#localStorageTrackIdsNeedUpdate.set(true)
   }
 
-  public saveTrackToDisk() {
+  public async saveTrackToDisk() {
     if (!this.#validated.current) {
       console.warn('Cannot export unvalidated track!')
       return
     }
     const json = this.stringify()
+    const zip = new JSZip()
+    zip.file('track.json', json)
+    const blob = await zip.generateAsync({
+      type: 'blob'
+    })
+    const data = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    link.download = this.trackName.current + '.json'
-    link.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(json)
+    link.download = this.trackName.current + '.zip'
+    link.href = data
     link.click()
   }
 
