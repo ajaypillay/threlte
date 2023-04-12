@@ -1,46 +1,32 @@
 <script lang="ts">
-  import { c } from '../../../../../lib/classes'
+  import JSZip from 'jszip'
   import { TrackData } from '../../TrackData/TrackData'
-  import { TrackRecord } from '../../TrackRecord/TrackRecord'
   import UiWrapper from '../../UI/UiWrapper.svelte'
   import BackButton from '../../UI/components/BackButton.svelte'
   import Button from '../../UI/components/Button.svelte'
   import TopBar from '../../UI/components/TopBar.svelte'
+  import TrackSelection from '../../UI/layouts/TrackSelection.svelte'
   import { actions } from '../../stores/app'
-  import { formatTime } from '../../utils/formatters'
   import { useKeyDown } from '../../utils/useKeyDown'
-  import JSZip from 'jszip'
 
+  let trackSelected = false
   useKeyDown('Escape', () => {
-    if (selectedTrackId) {
-      selectedTrackId = undefined
-    } else {
-      actions.goToMainMenu()
-    }
+    if (trackSelected) return
+    actions.goToMainMenu()
   })
 
-  const userTrackIds = TrackData.localStorageTrackIds
-
-  let numberOfUnnamedTracks = 0
-
-  const getTrackName = (trackData?: TrackData) => {
-    if (trackData?.trackName.current && trackData.trackName.current.length) {
-      return trackData.trackName.current
-    } else {
-      numberOfUnnamedTracks++
-      return `Unnamed Track ${numberOfUnnamedTracks}`
-    }
-  }
+  const localStorageTrackIds = TrackData.localStorageTrackIds
 
   const filterUndefined = <T>(value: T | undefined): value is T => {
     return !!value
   }
 
-  let selectedTrackId: string | undefined = undefined
-
-  const selectTrack = (trackId: string) => {
-    selectedTrackId = trackId
-  }
+  $: trackDatas = $localStorageTrackIds
+    .map((trackId) => {
+      const trackData = TrackData.fromLocalStorage(trackId)
+      return trackData
+    })
+    .filter(filterUndefined)
 
   let fileInputEl: HTMLInputElement
 
@@ -110,7 +96,7 @@
         <Button
           on:click={() => {
             actions.loadEmptyTrackData((trackData) => {
-              const trackDatas = $userTrackIds
+              const trackDatas = $localStorageTrackIds
                 .map((userTrackId) => {
                   return TrackData.fromLocalStorage(userTrackId)
                 })
@@ -140,83 +126,12 @@
       </div>
     </TopBar>
 
-    <div class="grid grid-cols-3 mt-[15px] gap-[15px] h-full min-h-0">
-      <div class="flex flex-col col-span-1 gap-[2px] h-full overflow-auto pointer-events-auto">
-        {#each $userTrackIds as userTrackId}
-          {@const trackData = TrackData.fromLocalStorage(userTrackId)}
-          {#if trackData}
-            <Button
-              on:click={() => selectTrack(trackData.trackId)}
-              class={c(selectedTrackId === trackData.trackId && '!bg-black !text-white')}
-            >
-              {getTrackName(trackData)}
-            </Button>
-          {/if}
-        {/each}
-      </div>
-
-      {#if selectedTrackId}
-        {@const trackData = TrackData.fromLocalStorage(selectedTrackId)}
-        <div class="col-span-2">
-          {#if trackData}
-            {@const trackRecord = TrackRecord.fromLocalStorage(trackData)}
-            <div class="bg-white rounded-sm px-[2px] text-black uppercase flex flex-col gap-[0px]">
-              <div>
-                "{getTrackName(trackData)}"
-              </div>
-              {#if trackData.authorName.current.length}
-                <div>
-                  AUTHOR: {trackData.authorName.current}
-                </div>
-              {/if}
-
-              {#if trackRecord}
-                <div>
-                  BEST: {formatTime(trackRecord.time.current)}
-                </div>
-              {/if}
-
-              <div class="flex flex-row justify-between items-center mb-[2px] mt-[10px]">
-                {#if trackData.validated.current}
-                  <Button
-                    class="!bg-green !text-black hover:!bg-green-600"
-                    on:click={() => {
-                      actions.setTrackData(trackData, () => {
-                        actions.startTimeAttack()
-                      })
-                    }}
-                  >
-                    Play
-                  </Button>
-                {:else}
-                  <div />
-                {/if}
-
-                <div class="flex flex-row justify-end items-center gap-[2px]">
-                  <Button
-                    class="!bg-black !text-white"
-                    on:click={() => {
-                      actions.setTrackData(trackData, () => {
-                        actions.startTrackEditor()
-                      })
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    class="!bg-red-500 hover:!bg-red-600 hover:!text-black"
-                    on:click={() => {
-                      TrackData.removeFromLocalStorage(trackData.trackId)
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </div>
-          {/if}
-        </div>
-      {/if}
-    </div>
+    <TrackSelection
+      bind:trackSelected
+      {trackDatas}
+      tracksCanBeEdited
+      tracksCanBeDeleted
+      showAuthor
+    />
   </div>
 </UiWrapper>

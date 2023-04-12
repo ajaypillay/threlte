@@ -1,24 +1,33 @@
 <script lang="ts">
-  import { actions } from '../../stores/app'
-  import { useKeyDown } from '../../utils/useKeyDown'
+  import { TrackData } from '../../TrackData/TrackData'
   import UiWrapper from '../../UI/UiWrapper.svelte'
   import BackButton from '../../UI/components/BackButton.svelte'
-  import Button from '../../UI/components/Button.svelte'
   import TopBar from '../../UI/components/TopBar.svelte'
+  import TrackSelection from '../../UI/layouts/TrackSelection.svelte'
+  import { actions } from '../../stores/app'
+  import { useKeyDown } from '../../utils/useKeyDown'
 
-  let trackIds: string[] = []
+  let trackDatas: TrackData[] = []
 
   const fetchAllTracks = async () => {
-    const jsons = await import.meta.glob('../../CampaignTracks/**.json')
+    const jsons = await import.meta.glob('../../CampaignTracks/*.json')
+    console.log(jsons)
     const keys = Object.keys(jsons) as string[]
-    trackIds = keys
+    const trackIds = keys
       .map((key) => key.split('/').pop()?.split('.').shift())
       .filter(Boolean) as string[]
+    const trackDatasPromises = trackIds.map(async (trackId) => {
+      const trackData = await TrackData.fromServer(trackId)
+      return trackData
+    })
+    trackDatas = await Promise.all(trackDatasPromises)
   }
 
   fetchAllTracks()
 
+  let trackSelected = false
   useKeyDown('Escape', () => {
+    if (trackSelected) return
     actions.goToMainMenu()
   })
 </script>
@@ -37,17 +46,8 @@
     <p slot="center">CAMPAIGN</p>
   </TopBar>
 
-  <div class="flex flex-col justify-center items-center h-[33vh]">
-    {#each trackIds as trackId}
-      <Button
-        on:click={() => {
-          actions.loadTrackDataFromServer(trackId, () => {
-            actions.startTimeAttack()
-          })
-        }}
-      >
-        {trackId}
-      </Button>
-    {/each}
-  </div>
+  <TrackSelection
+    bind:trackSelected
+    {trackDatas}
+  />
 </UiWrapper>

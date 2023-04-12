@@ -65,7 +65,7 @@
   </Canvas>
 
   <div
-    class="absolute top-0 left-0 w-full h-full z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none"
+    class="absolute top-0 left-0 w-full h-full z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none select-none"
     id="car-ui-portal-target"
   />
 </div>

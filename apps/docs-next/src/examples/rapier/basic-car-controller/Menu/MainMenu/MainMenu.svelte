@@ -16,22 +16,28 @@
     Options
   </Button>
   <svelte:fragment>
-    <div class="flex flex-col justify-center items-center h-full gap-[2px]">
-      <Button
-        on:click={() => {
-          actions.goToCampaignMenu()
-        }}
-      >
-        Campaign
-      </Button>
+    <div class="grid grid-cols-3 gap-[15px]">
+      <div class="col-span-1">
+        <div class="flex flex-col items-stretch gap-[2px]">
+          <Button
+            class="flex-1"
+            on:click={() => {
+              actions.goToCampaignMenu()
+            }}
+          >
+            Campaign
+          </Button>
 
-      <Button
-        on:click={() => {
-          actions.goToUserTracksMenu()
-        }}
-      >
-        User Tracks
-      </Button>
+          <Button
+            class="flex-1"
+            on:click={() => {
+              actions.goToUserTracksMenu()
+            }}
+          >
+            User Tracks
+          </Button>
+        </div>
+      </div>
     </div>
 
     <BottomBar>
