@@ -30,6 +30,8 @@
 
   let fileInputEl: HTMLInputElement
 
+  $: userHasTracks = trackDatas.length > 0
+
   const handleImport = async (file: File) => {
     const zip = await JSZip.loadAsync(file)
     zip.forEach((path, file) => {
@@ -94,6 +96,7 @@
           IMPORT
         </Button>
         <Button
+          forceFocusOnMount={!userHasTracks}
           on:click={() => {
             actions.loadEmptyTrackData((trackData) => {
               const trackDatas = $localStorageTrackIds

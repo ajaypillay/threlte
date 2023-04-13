@@ -30,9 +30,10 @@
 
 <div class="grid grid-cols-3 mt-[15px] gap-[15px] h-full min-h-0">
   <div class="flex flex-col col-span-1 gap-[2px] h-full overflow-auto pointer-events-auto">
-    {#each trackDatas as trackData}
+    {#each trackDatas as trackData, index}
       {#if trackData}
         <Button
+          forceFocusOnMount={index === 0}
           on:click={() => selectTrack(trackData.trackId)}
           class={c(selectedTrackId === trackData.trackId && '!bg-black !text-white')}
         >
@@ -66,6 +67,7 @@
           <div class="flex flex-row justify-between items-center mb-[2px] mt-[10px]">
             {#if trackData.validated.current}
               <Button
+                forceFocusOnMount
                 class="!bg-green !text-black hover:!bg-green-600"
                 on:click={() => {
                   actions.setTrackData(trackData, () => {

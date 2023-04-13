@@ -1,8 +1,17 @@
 <script lang="ts">
   import Button from './Button.svelte'
+
+  export let audioCues = true
+  export let preventFocusOnFocusLost = false
+  export let forceFocusOnMount = false
 </script>
 
-<Button on:click>
+<Button
+  on:click
+  {audioCues}
+  {preventFocusOnFocusLost}
+  {forceFocusOnMount}
+>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="72"

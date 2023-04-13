@@ -3,8 +3,10 @@
   import { c } from '../../../../../lib/classes'
   import { useAudioProvider } from '../../AudioProvider.svelte'
   import { appState } from '../../stores/app'
+  import { useKeyboardNavigation } from '../KeyboardNavigation.svelte'
 
   export let checked = false
+  export let forceFocusOnMount = false
 
   const { sfx } = appState.options.audio
 
@@ -16,9 +18,14 @@
 
   let _class = ''
   export { _class as class }
+
+  const { keyboardNavigationAction } = useKeyboardNavigation()
 </script>
 
 <button
+  use:keyboardNavigationAction={{
+    forceFocus: forceFocusOnMount
+  }}
   on:click={() => {
     checked = !checked
     dispatch('change', checked)
@@ -43,7 +50,9 @@
     <svg
       class={c(
         'w-full h-full absolute top-0 left-0',
-        checked ? 'opacity-100 group-hover:opacity-50' : 'opacity-0 group-hover:opacity-20'
+        checked
+          ? 'opacity-100 group-hover:opacity-50 group-focus:opacity-50'
+          : 'opacity-0 group-hover:opacity-20 group-focus:opacity-20'
       )}
       xmlns="http://www.w3.org/2000/svg"
       width="72"

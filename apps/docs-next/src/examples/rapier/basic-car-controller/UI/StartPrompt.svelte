@@ -7,6 +7,7 @@
 <UiWrapper>
   <div class="relative w-full h-full top-0 left-0 flex flex-row justify-center items-center">
     <Button
+      forceFocusOnMount
       on:click={() => {
         actions.goToAppIntro()
       }}

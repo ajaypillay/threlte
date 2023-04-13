@@ -12,6 +12,7 @@
   import StartPrompt from './UI/StartPrompt.svelte'
   import { appState } from './stores/app'
   import { useKeyPress } from './utils/useKeyPress'
+  import KeyboardNavigation from './UI/KeyboardNavigation.svelte'
 
   const { state, visibility } = appState
 
@@ -58,26 +59,28 @@
 <!-- We're only using global audio, so a global Audio Listener is fine -->
 <AudioListener masterVolume={$masterVolume} />
 
-<AudioProvider>
-  <!-- All scenes use the same environment -->
-  {#if $state !== 'start-prompt'}
-    <Env />
-  {/if}
+<KeyboardNavigation>
+  <AudioProvider>
+    <!-- All scenes use the same environment -->
+    {#if $state !== 'start-prompt'}
+      <Env />
+    {/if}
 
-  {#if $state === 'start-prompt'}
-    <StartPrompt />
-  {/if}
+    {#if $state === 'start-prompt'}
+      <StartPrompt />
+    {/if}
 
-  {#if $state === 'intro' || $state === 'menu'}
-    <IntroAndMenuBackground />
-  {/if}
+    {#if $state === 'intro' || $state === 'menu'}
+      <IntroAndMenuBackground />
+    {/if}
 
-  {#if $state === 'menu'}
-    <Menu />
-  {:else if $state === 'game'}
-    <Game />
-  {/if}
+    {#if $state === 'menu'}
+      <Menu />
+    {:else if $state === 'game'}
+      <Game />
+    {/if}
 
-  <!-- Mount this component to render preview images of TrackElements -->
-  <!-- <TrackElementsViewer /> -->
-</AudioProvider>
+    <!-- Mount this component to render preview images of TrackElements -->
+    <!-- <TrackElementsViewer /> -->
+  </AudioProvider>
+</KeyboardNavigation>
