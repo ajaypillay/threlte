@@ -9,11 +9,17 @@
   export let audioCues = true
   export let preventFocusOnFocusLost = false
   export let forceFocusOnMount = false
-  export let style: 'regular' | 'grey' = 'regular'
+  export let style: 'regular' | 'inverted' | 'grey' | 'green' | 'red' = 'regular'
 
   const styles: Record<typeof style, string> = {
-    grey: 'bg-[#e8e8e8] hover:bg-[#d6d6d6] focus:bg-[#d6d6d6] hover:!text-black focus:!text-black',
-    regular: 'bg-white text-black hover:bg-black hover:text-white focus:bg-black focus:text-white'
+    regular:
+      'bg-white text-black hover:bg-black hover:text-white focus:bg-black focus:text-white disabled:!bg-[#e8e8e8] disabled:!text-black',
+    inverted:
+      'bg-black text-white hover:bg-[#e8e8e8] hover:text-black focus:bg-[#e8e8e8] focus:text-black disabled:!bg-[#505050] disabled:!text-[#e8e8e8]',
+    grey: 'bg-[#e8e8e8] hover:bg-[#d6d6d6] focus:bg-[#d6d6d6] text-black disabled:!bg-[#e8e8e8] disabled:!text-[#505050]',
+    green:
+      'bg-green-500 text-black hover:bg-green-400 focus:bg-green-400 disabled:!bg-green-600 disabled:!text-[#505050]',
+    red: 'bg-red-500 text-black hover:bg-red-400 focus:bg-red-400 disabled:!bg-red-600 disabled:!text-[#505050]'
   }
 
   const { sfx } = appState.options.audio
@@ -24,19 +30,22 @@
   const { playAudio } = useAudioProvider()
 
   const onPointerEnter = async () => {
+    if (disabled) return
     if (!$sfx) return
     if (!audioCues) return
     playAudio('buttonHover', {
       detune: -300,
-      volume: 0.3
+      volume: 0.23
     })
   }
 
   const onClick = async () => {
+    if (disabled) return
     if (!$sfx) return
     if (!audioCues) return
     playAudio('buttonHover', {
-      detune: 300
+      detune: 300,
+      volume: 0.8
     })
   }
 

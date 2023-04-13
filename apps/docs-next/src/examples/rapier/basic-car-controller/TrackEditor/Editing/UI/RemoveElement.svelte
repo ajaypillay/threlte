@@ -13,7 +13,7 @@
 </script>
 
 <Button
-  class="!bg-red-500 hover:!bg-red-600 hover:!text-black"
+  style="red"
   disabled={$validated}
   on:click={removeElement}
 >

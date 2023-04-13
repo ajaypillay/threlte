@@ -13,7 +13,7 @@
 </script>
 
 <Button
-  class="bg-[#e8e8e8] hover:bg-[#d6d6d6] focus:bg-[#d6d6d6]"
+  style="grey"
   disabled={$validated}
   on:click={duplicateElement}
 >

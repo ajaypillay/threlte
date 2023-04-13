@@ -88,7 +88,7 @@
         />
         <div class="pb-[2px]">
           <Button
-            class="bg-[#e8e8e8] hover:bg-[#d6d6d6] focus:bg-[#d6d6d6]"
+            style="grey"
             disabled={!oldPlayerName.length}
             on:click={() => {
               actions.setPlayerName(oldPlayerName)

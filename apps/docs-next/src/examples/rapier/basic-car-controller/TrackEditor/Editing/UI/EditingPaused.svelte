@@ -5,13 +5,9 @@
   import Card from '../../../UI/components/Card.svelte'
   import TopBarLayout from '../../../UI/layouts/TopBarLayout.svelte'
   import { actions } from '../../../stores/app'
-  import { useTrackEditor } from '../context'
   import SaveTrack from './SaveTrack.svelte'
   import StartTrackValidation from './StartTrackValidation.svelte'
   import TrackDetails from './TrackDetails.svelte'
-
-  const { trackData } = useTrackEditor()
-  const validated = trackData.validated
 </script>
 
 <UiWrapper>
@@ -23,8 +19,6 @@
       }}
     />
 
-    <div slot="topbar-center">OPTIONS</div>
-
     <Button
       slot="topbar-right"
       on:click={() => {
@@ -34,7 +28,7 @@
       Main Menu
     </Button>
 
-    <div class="flex flex-col gap-[2px]">
+    <div class="flex flex-col gap-[15px]">
       <Card class="flex flex-col gap-[20px] max-w-[400px]">
         <div>Track details</div>
         <TrackDetails />

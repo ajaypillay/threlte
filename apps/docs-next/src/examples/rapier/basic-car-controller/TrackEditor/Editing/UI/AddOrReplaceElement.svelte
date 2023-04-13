@@ -43,7 +43,7 @@
           <Button
             class="!px-0"
             disabled={$validated}
-            forceFocusOnMount={index === 0 && !$validated}
+            forceFocusOnMount={index === category.elements.length - 1 && !$validated}
             on:click={() => {
               if ($currentlySelectedElement) {
                 trackData.setTrackElementType($currentlySelectedElement.id, element)

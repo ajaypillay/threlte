@@ -25,7 +25,8 @@
         </div>
 
         <Button
-          class="!bg-black !text-white mb-[2px]"
+          class="mb-[2px]"
+          style="inverted"
           disabled={!playerName.length}
           on:click={() => {
             actions.setPlayerName(playerName)

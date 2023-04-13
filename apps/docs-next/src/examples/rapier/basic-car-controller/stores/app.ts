@@ -77,15 +77,17 @@ const _appState: AppState = {
   debug: createState(false),
   options: {
     player: {
-      name: createState(localStorage.getItem('tm-player-name') ?? '')
+      name: createState(localStorage.getItem('tm-options-player-name') ?? '')
     },
     audio: {
-      music: createState(true),
-      sfx: createState(true)
+      music: createState(JSON.parse(localStorage.getItem('tm-options-audio-music') ?? 'true')),
+      sfx: createState(JSON.parse(localStorage.getItem('tm-options-audio-sfx') ?? 'true'))
     },
     video: {
-      shadows: createState(true),
-      postprocessing: createState(true)
+      shadows: createState(JSON.parse(localStorage.getItem('tm-options-video-shadows') ?? 'true')),
+      postprocessing: createState(
+        JSON.parse(localStorage.getItem('tm-options-video-postprocessing') ?? 'true')
+      )
     }
   }
 }
@@ -206,73 +208,29 @@ export const actions = buildActions(
       _appState.visibility.set(visibility)
     },
 
-    enableMusic: () => {
-      _appState.options.audio.music.set(true)
-    },
-
-    disableMusic: () => {
-      _appState.options.audio.music.set(false)
-    },
-
     setMusic: (music: boolean) => {
+      localStorage.setItem('tm-options-audio-music', JSON.stringify(music))
       _appState.options.audio.music.set(music)
     },
 
-    toggleMusic: () => {
-      _appState.options.audio.music.update((music) => !music)
-    },
-
-    enableSfx: () => {
-      _appState.options.audio.sfx.set(true)
-    },
-
-    disableSfx: () => {
-      _appState.options.audio.sfx.set(false)
-    },
-
     setSfx: (sfx: boolean) => {
+      localStorage.setItem('tm-options-audio-sfx', JSON.stringify(sfx))
       _appState.options.audio.sfx.set(sfx)
     },
 
-    toggleSfx: () => {
-      _appState.options.audio.sfx.update((sfx) => !sfx)
-    },
-
-    enableShadows: () => {
-      _appState.options.video.shadows.set(true)
-    },
-
-    disableShadows: () => {
-      _appState.options.video.shadows.set(false)
-    },
-
     setShadows: (shadows: boolean) => {
+      localStorage.setItem('tm-options-video-shadows', JSON.stringify(shadows))
       _appState.options.video.shadows.set(shadows)
     },
 
-    toggleShadows: () => {
-      _appState.options.video.shadows.update((shadows) => !shadows)
-    },
-
-    enablePostprocessing: () => {
-      _appState.options.video.postprocessing.set(true)
-    },
-
-    disablePostprocessing: () => {
-      _appState.options.video.postprocessing.set(false)
-    },
-
     setPostprocessing: (postprocessing: boolean) => {
+      localStorage.setItem('tm-options-video-postprocessing', JSON.stringify(postprocessing))
       _appState.options.video.postprocessing.set(postprocessing)
-    },
-
-    togglePostprocessing: () => {
-      _appState.options.video.postprocessing.update((postprocessing) => !postprocessing)
     },
 
     setPlayerName: (name: string) => {
       if (!name.length) return { invalid: true }
-      localStorage.setItem('tm-player-name', name)
+      localStorage.setItem('tm-options-player-name', name)
       _appState.options.player.name.set(name)
     },
 

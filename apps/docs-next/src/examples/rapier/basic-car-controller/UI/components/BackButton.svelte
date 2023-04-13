@@ -1,16 +1,13 @@
 <script lang="ts">
   import Button from './Button.svelte'
+  import type { ComponentProps } from 'svelte'
 
-  export let audioCues = true
-  export let preventFocusOnFocusLost = false
-  export let forceFocusOnMount = false
+  type $$Props = ComponentProps<Button>
 </script>
 
 <Button
   on:click
-  {audioCues}
-  {preventFocusOnFocusLost}
-  {forceFocusOnMount}
+  {...$$restProps}
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"

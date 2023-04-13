@@ -11,6 +11,6 @@
 </script>
 
 <Button
-  style="grey"
+  style="inverted"
   on:click={onClick}>Export Track</Button
 >

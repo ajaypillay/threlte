@@ -8,7 +8,9 @@
   import TrackElementTransform from '../../TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../../TrackViewer/TrackViewer.svelte'
   import UiWrapper from '../../UI/UiWrapper.svelte'
+  import Button from '../../UI/components/Button.svelte'
   import Card from '../../UI/components/Card.svelte'
+  import TopBarLayout from '../../UI/layouts/TopBarLayout.svelte'
   import { actions, gameState } from '../../stores/app'
   import { useGameIsPausable } from '../../utils/useGameIsPausable'
   import { useKeyDown } from '../../utils/useKeyDown'
@@ -21,13 +23,10 @@
   import EditingPaused from './UI/EditingPaused.svelte'
   import ElementDetails from './UI/ElementDetails.svelte'
   import RemoveElement from './UI/RemoveElement.svelte'
-  import SaveTrack from './UI/SaveTrack.svelte'
-  import StartTrackValidation from './UI/StartTrackValidation.svelte'
-  import TrackDetails from './UI/TrackDetails.svelte'
-  import { createTrackEditorContext } from './context'
   import RotateElement from './UI/RotateElement.svelte'
-  import TopBarLayout from '../../UI/layouts/TopBarLayout.svelte'
-  import Button from '../../UI/components/Button.svelte'
+  import { createTrackEditorContext } from './context'
+  import { Euler } from 'three'
+  import { DEG2RAD } from 'three/src/math/MathUtils'
 
   export let trackData: TrackData
 
@@ -46,14 +45,29 @@
   $: currentlySelectedElementType = $currentlySelectedElement?.type
 
   useKeyDown('t', () => {
+    if ($paused) return
     transformMode.set('translate')
   })
 
   useKeyDown('r', () => {
+    if ($paused) return
     transformMode.set('rotate')
   })
 
+  useKeyDown('Shift+R', () => {
+    if ($paused) return
+    if (!$currentlySelectedElement) return
+    const euler = new Euler().set(...$currentlySelectedElement.rotation.current)
+    // snap to the next 90 degree rotation on the y axis
+    euler.y += 90 * DEG2RAD
+    // modulo 360
+    euler.y = euler.y % (Math.PI * 2)
+    const newRotation = euler.toArray()
+    trackData.setTrackElementRotation($currentlySelectedElement.id, newRotation as any)
+  })
+
   useKeyDown('g', () => {
+    if ($paused) return
     transformSpace.update((space) => {
       if (space === 'local') {
         return 'world'
@@ -64,26 +78,31 @@
   })
 
   useKeyDown('Shift+D', () => {
+    if ($paused) return
     if (!$currentlySelectedElement) return
     const newElement = trackData.duplicateTrackElement($currentlySelectedElement.id)
     currentlySelectedElement.set(newElement)
   })
 
   useKeyDown('Control+Backspace', () => {
+    if ($paused) return
     if (!$currentlySelectedElement) return
     trackData.removeTrackElement($currentlySelectedElement.id)
     currentlySelectedElement.set(undefined)
   })
 
   useKeyDown('Shift', () => {
+    if ($paused) return
     transformSnap.set(true)
   })
 
   useKeyUp('Shift', () => {
+    if ($paused) return
     transformSnap.set(false)
   })
 
   useKeyDown('v', () => {
+    if ($paused) return
     if ($view === 'car') {
       actions.setTrackEditorView('orbit')
     } else {
@@ -126,7 +145,7 @@
 
             <div class="pb-[2px]">
               <Button
-                class="!bg-red-500 hover:!bg-red-600 focus:!bg-red-600 hover:!text-black focus:!text-black"
+                style="red"
                 on:click={() => {
                   trackData.invalidate()
                 }}

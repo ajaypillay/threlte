@@ -68,7 +68,7 @@
             {#if trackData.validated.current}
               <Button
                 forceFocusOnMount
-                class="!bg-green !text-black hover:!bg-green-600"
+                style="green"
                 on:click={() => {
                   actions.setTrackData(trackData, () => {
                     actions.startTimeAttack()
@@ -86,7 +86,7 @@
                 {#if tracksCanBeEdited}
                   <Button
                     forceFocusOnMount={!trackData.validated.current}
-                    class="!bg-black !text-white"
+                    style="inverted"
                     on:click={() => {
                       actions.setTrackData(trackData, () => {
                         actions.startTrackEditor()
@@ -99,7 +99,7 @@
 
                 {#if tracksCanBeDeleted}
                   <Button
-                    class="!bg-red-500 hover:!bg-red-600 hover:!text-black"
+                    style="red"
                     on:click={() => {
                       TrackData.removeFromLocalStorage(trackData.trackId)
                     }}

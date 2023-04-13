@@ -10,7 +10,7 @@
 
 {#if $validated}
   <Button
-    class="!bg-red-500 hover:!bg-red-600 focus:!bg-red-600 hover:!text-black focus:!text-black"
+    style="red"
     on:click={() => {
       trackData.invalidate()
     }}
@@ -19,7 +19,7 @@
   </Button>
 {:else}
   <Button
-    class="!bg-green-500 hover:!bg-green-600 focus:!bg-green-600 hover:!text-black focus:!text-black"
+    style="green"
     on:click={() => {
       actions.startTrackValidation()
     }}

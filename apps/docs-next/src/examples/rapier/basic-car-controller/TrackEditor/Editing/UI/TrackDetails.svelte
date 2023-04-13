@@ -8,9 +8,9 @@
   let trackName = trackData.trackName.current
 </script>
 
-<div class="flex flex-col gap-[10px] items-start">
+<div class="flex flex-row gap-[2px] items-end text-[0.65em]">
   <TextInput
-    label="Name"
+    label="Track Name"
     id="track-name"
     preventFocusOnFocusLost
     bind:value={trackName}
