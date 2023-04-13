@@ -8,12 +8,11 @@
   import TrackEditorElementSelection from './TrackEditorElementSelection.svelte'
   import TrackEditorElementSelector from './TrackEditorElementSelector.svelte'
   import TrackEditorElementTransformControls from './TrackEditorElementTransformControls.svelte'
-  import AddElement from './UI/AddElement.svelte'
+  import AddElement from './UI/AddOrReplaceElement.svelte'
   import DuplicateElement from './UI/DuplicateElement.svelte'
   import EditingPaused from './UI/EditingPaused.svelte'
   import ElementDetails from './UI/ElementDetails.svelte'
   import RemoveElement from './UI/RemoveElement.svelte'
-  import ReplaceWithElement from './UI/ReplaceWithElement.svelte'
   import SaveTrack from './UI/SaveTrack.svelte'
   import StartTrackValidation from './UI/StartTrackValidation.svelte'
   import TrackDetails from './UI/TrackDetails.svelte'
@@ -99,15 +98,13 @@
   <!-- else content here -->
   {#if $view === 'orbit'}
     <UiWrapper>
-      {#if !$currentlySelectedElement}
-        <AddElement />
-      {:else}
+      <AddElement />
+      {#if $currentlySelectedElement}
         <div class="absolute top-0 right-0">
           {#key $currentlySelectedElement.id}
             <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
           {/key}
         </div>
-        <ReplaceWithElement />
         <DuplicateElement />
         <RemoveElement />
       {/if}

@@ -1,7 +1,6 @@
 // Elements
 import BarrierEnd from './BarrierEnd.svelte'
 import BarrierTurnLeft from './BarrierTurnLeft.svelte'
-import Barrier from './Barrier.svelte'
 import BarrierTurnRight from './BarrierTurnRight.svelte'
 import BasicBox from './BasicBox.svelte'
 import Boost from './Boost.svelte'
@@ -14,40 +13,67 @@ import Ramp from './Ramp.svelte'
 import RampInverse from './RampInverse.svelte'
 import Slope from './Slope.svelte'
 
+export const elementCategories = {
+  basics: {
+    label: 'Basics'
+  },
+  ramps: {
+    label: 'Ramps'
+  },
+  barriers: {
+    label: 'Barriers'
+  },
+  boosts: {
+    label: 'Boosts'
+  },
+  checkpoints: {
+    label: 'Checkpoints'
+  }
+}
+
+export type TrackElementCategory = keyof typeof elementCategories
+
 export const trackElementPrototypes = {
   Box: {
     buttonLabel: 'Box',
-    component: BasicBox
+    component: BasicBox,
+    category: 'basics'
   },
 
   HalfBox: {
     buttonLabel: 'Half Box',
-    component: HalfBox
+    component: HalfBox,
+    category: 'basics'
   },
 
   Ramp: {
     buttonLabel: 'Ramp',
-    component: Ramp
+    component: Ramp,
+    category: 'ramps'
   },
 
   RampInverse: {
     buttonLabel: 'Inverse Ramp',
-    component: RampInverse
+    component: RampInverse,
+    category: 'ramps'
   },
 
   Checkpoint: {
     buttonLabel: 'Checkpoint',
-    component: Checkpoint
+    component: Checkpoint,
+    category: 'checkpoints'
   },
 
   CheckpointRing: {
     buttonLabel: 'Ring Checkpoint',
-    component: CheckpointRing
+    component: CheckpointRing,
+    category: 'checkpoints'
   },
 
   Boost: {
     buttonLabel: 'Boost',
-    component: Boost
+    component: Boost,
+    category: 'boosts'
   },
 
   // Barrier: {
@@ -57,37 +83,46 @@ export const trackElementPrototypes = {
 
   DoubleBarrier: {
     buttonLabel: 'Double Barrier',
-    component: DoubleBarrier
+    component: DoubleBarrier,
+    category: 'barriers'
   },
 
   BarrierEnd: {
     buttonLabel: 'Barrier End',
-    component: BarrierEnd
+    component: BarrierEnd,
+    category: 'barriers'
   },
 
   BarrierTurnLeft: {
     buttonLabel: 'Barrier Turn Left',
-    component: BarrierTurnLeft
+    component: BarrierTurnLeft,
+    category: 'barriers'
   },
 
   BarrierTurnRight: {
     buttonLabel: 'Barrier Turn Right',
-    component: BarrierTurnRight
+    component: BarrierTurnRight,
+    category: 'barriers'
   },
 
   Slope: {
     buttonLabel: 'Slope',
-    component: Slope
+    component: Slope,
+    category: 'basics'
   },
 
   Finish: {
     buttonLabel: 'Finish',
-    component: Finish
+    component: Finish,
+    category: 'basics'
   }
 } satisfies Record<
   string,
   {
     buttonLabel: string
     component: any
+    category: keyof typeof elementCategories
   }
 >
+
+export type TrackElementPrototypeType = keyof typeof trackElementPrototypes

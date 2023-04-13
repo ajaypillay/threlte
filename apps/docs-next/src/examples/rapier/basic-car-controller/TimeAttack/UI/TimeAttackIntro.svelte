@@ -1,21 +1,9 @@
 <script lang="ts">
-  import { actions, gameState } from '../../stores/app'
-  import { useKeyPress } from '../../utils/useKeyPress'
-  import TopbarLayout from '../../UI/layouts/TopBarLayout.svelte'
+  import Button from '../../UI/components/Button.svelte'
   import Card from '../../UI/components/Card.svelte'
-  import BottomBar from '../../UI/components/BottomBar.svelte'
-  import BackButton from '../../UI/components/BackButton.svelte'
-  import { useKeyboardNavigation } from '../../UI/KeyboardNavigation.svelte'
-
-  const { focusedElement } = useKeyboardNavigation()
-
-  useKeyPress('Enter', () => {
-    console.log('focusedElement', $focusedElement)
-    if ($focusedElement) {
-      return
-    }
-    actions.goToCountIn()
-  })
+  import TopbarLayout from '../../UI/layouts/TopBarLayout.svelte'
+  import { actions, gameState } from '../../stores/app'
+  import { formatTime } from '../../utils/formatters'
 
   const { trackRecord, trackData } = gameState
 
@@ -23,25 +11,38 @@
 </script>
 
 <TopbarLayout>
-  <div slot="topbar-left">
-    <BackButton
-      preventFocusOnFocusLost
-      on:click={() => {
-        actions.goToMainMenu()
-      }}
-    />
-  </div>
+  <Button
+    slot="topbar-left"
+    preventFocusOnFocusLost
+    on:click={() => {
+      actions.goToMainMenu()
+    }}
+  >
+    Menu
+  </Button>
   <div slot="topbar-center">
     {trackData.current?.trackName.current}
   </div>
+  <Button
+    slot="topbar-right"
+    forceFocusOnMount
+    on:click={() => {
+      actions.goToCountIn()
+    }}
+  >
+    Start
+  </Button>
   <div class="absolute top-0 left-0 w-full h-full">
-    {#if $trackRecord}
-      <div>Current best: {$formattedTime}</div>
-    {/if}
-    <BottomBar>
-      <Card slot="center">
-        <div>PRESS ENTER TO START</div>
-      </Card>
-    </BottomBar>
+    <Card class="inline-block">
+      {#if $trackRecord}
+        <div class="mb-[10px]">Current best: {$formattedTime}</div>
+      {/if}
+      <div>
+        AUTHOR: {formatTime(trackData.current?.trackTimes.author.current ?? 0)}<br />
+        GOLD: {formatTime(trackData.current?.trackTimes.gold.current ?? 0)}<br />
+        SILVER: {formatTime(trackData.current?.trackTimes.silver.current ?? 0)}<br />
+        BRONZE: {formatTime(trackData.current?.trackTimes.bronze.current ?? 0)}
+      </div>
+    </Card>
   </div>
 </TopbarLayout>

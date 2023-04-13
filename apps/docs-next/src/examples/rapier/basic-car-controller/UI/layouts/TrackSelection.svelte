@@ -85,6 +85,7 @@
               <div class="flex flex-row justify-end items-center gap-[2px]">
                 {#if tracksCanBeEdited}
                   <Button
+                    forceFocusOnMount={!trackData.validated.current}
                     class="!bg-black !text-white"
                     on:click={() => {
                       actions.setTrackData(trackData, () => {
