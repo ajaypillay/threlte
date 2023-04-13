@@ -1,27 +1,29 @@
 <script lang="ts">
+  import Button from '../../../UI/components/Button.svelte'
+  import TextInput from '../../../UI/components/TextInput.svelte'
   import { useTrackEditor } from '../context'
 
   const { trackData } = useTrackEditor()
 
-  const trackName = trackData.trackName
-  const authorName = trackData.authorName
+  let trackName = trackData.trackName.current
 </script>
 
-<div class="text-[0.5em] flex flex-col gap-1 items-start">
-  <label for="trackName">Track Name</label>
-  <input
-    class="pointer-events-auto"
-    id="trackName"
-    name="trackName"
-    type="text"
-    bind:value={$trackName}
+<div class="flex flex-col gap-[10px] items-start">
+  <TextInput
+    label="Name"
+    id="track-name"
+    preventFocusOnFocusLost
+    bind:value={trackName}
   />
-  <label for="trackName">Author Name</label>
-  <input
-    class="pointer-events-auto"
-    id="authorName"
-    name="authorName"
-    type="text"
-    bind:value={$authorName}
-  />
+
+  <Button
+    disabled={!trackName.length}
+    style="grey"
+    on:click={() => {
+      if (!trackName.length) return
+      trackData.trackName.set(trackName)
+    }}
+  >
+    Save
+  </Button>
 </div>

@@ -38,6 +38,8 @@
     }
   }
 
+  let navigationType: 'pointer' | 'keyboard' = 'keyboard'
+
   let navigationalElements: Set<NavigationalElement> = new Set()
   let focusedElement: HTMLElement | undefined = undefined
 
@@ -56,6 +58,8 @@
   }
 
   const focusElement = async (element: HTMLElement) => {
+    if (focusedElement === element) return
+    focusedElement?.blur()
     focusedElement = element
     await tick()
     focusedElementCenter = getCenterOfElement(element)
@@ -74,7 +78,7 @@
         preventFocusOnFocusLost: options?.preventFocusOnFocusLost ?? false
       }
     })
-    if (options?.forceFocus) {
+    if (options?.forceFocus && navigationType === 'keyboard') {
       focusElement(element)
     }
     navigationalElements = navigationalElements
@@ -106,6 +110,16 @@
     if (navigationalElement) {
       navigationalElements.delete(navigationalElement)
       navigationalElements = navigationalElements
+    }
+
+    // if a change in navigationElements through pointer events, we don' care
+    if (navigationType === 'pointer') {
+      if (focusedElement === element) {
+        focusedElement = undefined
+        focusedElementCenter = lastCursorPosition
+        focusedElementCenterSpring.set(lastCursorPosition, { hard: true })
+      }
+      return
     }
 
     focusElement: if (focusedElement === element) {
@@ -241,9 +255,10 @@
 
     // focus the closest element
     focusElement(closestElement)
+    navigationType = 'keyboard'
   }
 
-  const onPointerMove = async (e: PointerEvent) => {
+  const resetByPointerEvent = (e: PointerEvent) => {
     lastCursorPosition = {
       x: e.clientX,
       y: e.clientY
@@ -258,11 +273,21 @@
       focusedElement = undefined
     }
   }
+
+  const onPointerDown = (e: PointerEvent) => {
+    navigationType = 'pointer'
+    resetByPointerEvent(e)
+  }
+
+  const onPointerMove = async (e: PointerEvent) => {
+    resetByPointerEvent(e)
+  }
 </script>
 
 <svelte:window
-  on:keydown={onKeyDown}
+  on:pointerdown={onPointerDown}
   on:pointermove={onPointerMove}
+  on:keydown={onKeyDown}
 />
 
 <slot />

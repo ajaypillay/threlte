@@ -6,7 +6,7 @@
   import Button from '../../UI/components/Button.svelte'
   import TopBar from '../../UI/components/TopBar.svelte'
   import TrackSelection from '../../UI/layouts/TrackSelection.svelte'
-  import { actions } from '../../stores/app'
+  import { actions, appState } from '../../stores/app'
   import { useKeyDown } from '../../utils/useKeyDown'
 
   let trackSelected = false
@@ -110,6 +110,8 @@
               }).length
 
               trackData.trackName.set(`Unnamed Track ${trackNamesStartingWithUnnamed + 1}`)
+              trackData.authorName.set(appState.options.player.name.current)
+              trackData.addTrackElement('Box')
 
               actions.startTrackEditor()
             })

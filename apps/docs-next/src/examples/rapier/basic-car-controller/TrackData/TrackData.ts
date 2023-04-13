@@ -149,20 +149,6 @@ export class TrackData {
   #finishCount = jsonCurrentWritable(0)
   finishCount = jsonCurrentReadable(this.#finishCount)
 
-  public canBeValidated = derived(
-    [this.finishCount, this.trackName, this.authorName],
-    ([finishCount, trackName, authorName]) => {
-      return finishCount > 0 && trackName.length > 0 && authorName.length > 0
-    }
-  )
-
-  public canBeSaved = derived(
-    [this.trackName, this.authorName, this.validated],
-    ([trackName, authorName, validated]) => {
-      return trackName.length > 0 && authorName.length > 0 && validated
-    }
-  )
-
   public static createEmpty() {
     return new TrackData()
   }
@@ -272,10 +258,6 @@ export class TrackData {
   }
 
   public async saveTrackToDisk() {
-    if (!this.#validated.current) {
-      console.warn('Cannot export unvalidated track!')
-      return
-    }
     const json = this.stringify()
     const zip = new JSZip()
     zip.file('track.json', json)

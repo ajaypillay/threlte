@@ -23,7 +23,6 @@
           <div class="flex flex-col items-stretch gap-[2px]">
             <Button
               class="flex-1"
-              forceFocusOnMount
               on:click={() => {
                 actions.goToCampaignMenu()
               }}
@@ -32,6 +31,7 @@
             </Button>
 
             <Button
+              forceFocusOnMount
               class="flex-1"
               on:click={() => {
                 actions.goToUserTracksMenu()

@@ -9,6 +9,12 @@
   export let audioCues = true
   export let preventFocusOnFocusLost = false
   export let forceFocusOnMount = false
+  export let style: 'regular' | 'grey' = 'regular'
+
+  const styles: Record<typeof style, string> = {
+    grey: 'bg-[#e8e8e8] hover:bg-[#d6d6d6] focus:bg-[#d6d6d6] hover:!text-black focus:!text-black',
+    regular: 'bg-white text-black hover:bg-black hover:text-white focus:bg-black focus:text-white'
+  }
 
   const { sfx } = appState.options.audio
 
@@ -47,11 +53,11 @@
   on:click
   {disabled}
   class={c(
-    'bg-white rounded-sm text-black hover:bg-black hover:text-white focus:bg-black focus:text-white uppercase [&_svg]:!fill-current flex flex-row gap-2 items-center justify-center [&_img]:block [&_img]:p-[2px] outline-none',
+    'rounded-sm uppercase [&_svg]:!fill-current flex flex-row gap-2 items-center justify-center [&_img]:block [&_img]:p-[2px] outline-none',
     size === 'small'
       ? 'px-2 [&_svg]:h-[0.75em] [&_svg]:w-[0.75em] [&_img]:h-[0.75em] [&_img]:w-[0.75em] text-[0.5em]'
       : 'px-3 [&_svg]:h-[1em] [&_svg]:w-[1em] [&_img]:h-[1em] [&_img]:w-[1em]',
-    disabled ? 'opacity-50 cursor-not-allowed !bg-white !text-black' : '',
+    styles[style],
     _class
   )}
 >

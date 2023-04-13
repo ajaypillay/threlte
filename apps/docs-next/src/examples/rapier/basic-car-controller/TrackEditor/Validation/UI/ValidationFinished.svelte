@@ -6,7 +6,7 @@
 
   export let trackData: TrackData
 
-  const { canBeSaved, trackTimes } = trackData
+  const { trackTimes } = trackData
 
   const { author } = trackTimes
 
@@ -18,7 +18,6 @@
 </p>
 
 <Button
-  disabled={!$canBeSaved}
   on:click={() => {
     trackData.saveTrackToDisk()
   }}

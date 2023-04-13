@@ -5,22 +5,21 @@
 
   const { trackData } = useTrackEditor()
 
-  const { canBeValidated, validated } = trackData
+  const { validated } = trackData
 </script>
 
 {#if $validated}
   <Button
-    size="small"
+    class="!bg-red-500 hover:!bg-red-600 focus:!bg-red-600 hover:!text-black focus:!text-black"
     on:click={() => {
       trackData.invalidate()
     }}
   >
-    Edit Track
+    Unlock Track
   </Button>
 {:else}
   <Button
-    size="small"
-    disabled={!$canBeValidated}
+    class="!bg-green-500 hover:!bg-green-600 focus:!bg-green-600 hover:!text-black focus:!text-black"
     on:click={() => {
       actions.startTrackValidation()
     }}

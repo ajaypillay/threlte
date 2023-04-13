@@ -80,11 +80,11 @@
         }, 1e3)
       )
 
-      timeouts.push(
-        setTimeout(() => {
-          actions.goToMainMenu()
-        }, 4e3)
-      )
+      actions.goToMainMenu()
+      // timeouts.push(
+      //   setTimeout(() => {
+      //   }, 4e3)
+      // )
     }
   })
 

@@ -54,7 +54,7 @@
           </div>
           {#if trackData.authorName.current.length && showAuthor}
             <div>
-              AUTHOR: {trackData.authorName.current}
+              {trackData.authorName.current}
             </div>
           {/if}
 

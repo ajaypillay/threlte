@@ -35,28 +35,9 @@
   })
 </script>
 
-<div class="flex flex-row items-start gap-[2px]">
+<div class="flex flex-row items-end gap-[2px]">
   {#each categories as category, index}
     <div class="flex flex-col gap-[2px]">
-      <Button
-        on:click={() => {
-          if (selectedCategory === category) {
-            selectedCategory = undefined
-          } else {
-            selectedCategory = category
-          }
-        }}
-        forceFocusOnMount={index === 0 && !$validated}
-        class="!px-0"
-        disabled={$validated}
-      >
-        <img
-          src={category.previewImage}
-          alt={category.name}
-          class="!h-[60px] !w-[60px]"
-        />
-      </Button>
-
       {#if selectedCategory === category}
         {#each category.elements as element, index}
           <Button
@@ -80,6 +61,25 @@
           </Button>
         {/each}
       {/if}
+
+      <Button
+        on:click={() => {
+          if (selectedCategory === category) {
+            selectedCategory = undefined
+          } else {
+            selectedCategory = category
+          }
+        }}
+        forceFocusOnMount={index === 0 && !$validated}
+        class="!px-0"
+        disabled={$validated}
+      >
+        <img
+          src={category.previewImage}
+          alt={category.name}
+          class="!h-[60px] !w-[60px]"
+        />
+      </Button>
     </div>
   {/each}
 </div>

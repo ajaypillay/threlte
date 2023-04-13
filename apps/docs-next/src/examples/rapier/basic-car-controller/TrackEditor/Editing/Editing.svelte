@@ -1,10 +1,18 @@
 <script lang="ts">
   import { T } from '@threlte/core'
   import { OrbitControls, interactivity } from '@threlte/extras'
+  import Car from '../../Car/Car.svelte'
   import type { TrackData } from '../../TrackData/TrackData'
+  import { trackElementPrototypes } from '../../TrackElements/elements'
   import TrackElement from '../../TrackViewer/TrackElement.svelte'
   import TrackElementTransform from '../../TrackViewer/TrackElementTransform.svelte'
   import TrackViewer from '../../TrackViewer/TrackViewer.svelte'
+  import UiWrapper from '../../UI/UiWrapper.svelte'
+  import Card from '../../UI/components/Card.svelte'
+  import { actions, gameState } from '../../stores/app'
+  import { useGameIsPausable } from '../../utils/useGameIsPausable'
+  import { useKeyDown } from '../../utils/useKeyDown'
+  import { useKeyUp } from '../../utils/useKeyUp'
   import TrackEditorElementSelection from './TrackEditorElementSelection.svelte'
   import TrackEditorElementSelector from './TrackEditorElementSelector.svelte'
   import TrackEditorElementTransformControls from './TrackEditorElementTransformControls.svelte'
@@ -17,12 +25,9 @@
   import StartTrackValidation from './UI/StartTrackValidation.svelte'
   import TrackDetails from './UI/TrackDetails.svelte'
   import { createTrackEditorContext } from './context'
-  import { actions, gameState } from '../../stores/app'
-  import { useKeyDown } from '../../utils/useKeyDown'
-  import { useKeyUp } from '../../utils/useKeyUp'
-  import { useGameIsPausable } from '../../utils/useGameIsPausable'
-  import UiWrapper from '../../UI/UiWrapper.svelte'
-  import Car from '../../Car/Car.svelte'
+  import RotateElement from './UI/RotateElement.svelte'
+  import TopBarLayout from '../../UI/layouts/TopBarLayout.svelte'
+  import Button from '../../UI/components/Button.svelte'
 
   export let trackData: TrackData
 
@@ -31,10 +36,14 @@
 
   $: carActive = $view === 'car' && !$paused
 
+  const validated = trackData.validated
+
   interactivity()
 
   const { currentlySelectedElement, transformMode, transformSpace, transformSnap } =
     createTrackEditorContext(trackData)
+
+  $: currentlySelectedElementType = $currentlySelectedElement?.type
 
   useKeyDown('t', () => {
     transformMode.set('translate')
@@ -98,19 +107,93 @@
   <!-- else content here -->
   {#if $view === 'orbit'}
     <UiWrapper>
-      <AddElement />
-      {#if $currentlySelectedElement}
-        <div class="absolute top-0 right-0">
-          {#key $currentlySelectedElement.id}
-            <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
-          {/key}
+      <TopBarLayout>
+        <Button
+          on:click={() => {
+            actions.pauseGame()
+          }}
+          slot="topbar-left">Menu</Button
+        >
+
+        {#if $validated}
+          <Card class="flex flex-col gap-[20px] max-w-[400px]">
+            <div>Track is validated</div>
+
+            <div class="text-[0.65em]">
+              The track is validated and can be played. While the track is validated, you cannot
+              edit it. If you want to edit the track, you have to unlock it first.
+            </div>
+
+            <div class="pb-[2px]">
+              <Button
+                class="!bg-red-500 hover:!bg-red-600 focus:!bg-red-600 hover:!text-black focus:!text-black"
+                on:click={() => {
+                  trackData.invalidate()
+                }}
+              >
+                Unlock
+              </Button>
+            </div>
+          </Card>
+        {/if}
+
+        <div class="absolute bottom-0 left-0">
+          <AddElement />
         </div>
-        <DuplicateElement />
-        <RemoveElement />
-      {/if}
-      <StartTrackValidation />
-      <SaveTrack />
-      <TrackDetails />
+
+        {#if $currentlySelectedElement && $currentlySelectedElementType}
+          <div class="absolute bottom-0 right-0">
+            <Card>
+              <div class="mb-[20px]">
+                {trackElementPrototypes[$currentlySelectedElementType].buttonLabel}
+              </div>
+              <div class="mb-[20px]">
+                {#key $currentlySelectedElement.id}
+                  <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
+                {/key}
+              </div>
+              <div class="flex flex-row justify-between gap-[2px] text-[0.65em] pb-[2px]">
+                <div class="flex flex-row gap-[2px]">
+                  <DuplicateElement />
+                  <RotateElement />
+                </div>
+                <RemoveElement />
+              </div>
+            </Card>
+          </div>
+        {/if}
+
+        <!-- <div class="absolute w-full h-full left-0 top-0">
+        </div> -->
+
+        <!-- <div class="relative w-full h-full top-0 left-0">
+        <StartTrackValidation />
+        <SaveTrack />
+        <TrackDetails />
+
+        {#if $currentlySelectedElement && $currentlySelectedElementType}
+          <div class="absolute top-0 right-0">
+            <Card>
+              <div class="mb-[10px]">
+                {trackElementPrototypes[$currentlySelectedElementType].buttonLabel}
+              </div>
+              <div class="mb-[20px]">
+                {#key $currentlySelectedElement.id}
+                  <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
+                {/key}
+              </div>
+              <div class="flex flex-row justify-between gap-[2px] text-[0.65em] pb-[2px]">
+                <div class="flex flex-row gap-[2px]">
+                  <DuplicateElement />
+                  <RotateElement />
+                </div>
+                <RemoveElement />
+              </div>
+            </Card>
+          </div>
+        {/if}
+      </div> -->
+      </TopBarLayout>
     </UiWrapper>
   {/if}
 {/if}

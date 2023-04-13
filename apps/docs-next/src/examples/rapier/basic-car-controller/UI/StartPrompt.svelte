@@ -1,18 +1,50 @@
 <script lang="ts">
-  import { actions } from '../stores/app'
+  import { actions, appState } from '../stores/app'
   import UiWrapper from './UiWrapper.svelte'
   import Button from './components/Button.svelte'
+  import Card from './components/Card.svelte'
+  import TextInput from './components/TextInput.svelte'
+
+  const { name } = appState.options.player
+
+  let playerName = $name
 </script>
 
 <UiWrapper>
-  <div class="relative w-full h-full top-0 left-0 flex flex-row justify-center items-center">
-    <Button
-      forceFocusOnMount
-      on:click={() => {
-        actions.goToAppIntro()
-      }}
-    >
-      Start
-    </Button>
+  <div
+    class="relative w-full h-full top-0 left-0 flex flex-col justify-center items-center gap-[10px]"
+  >
+    {#if $name === ''}
+      <Card class="">
+        <div class="mb-[20px]">
+          <TextInput
+            forceFocusOnMount
+            bind:value={playerName}
+            label="Your Name"
+          />
+        </div>
+
+        <Button
+          class="!bg-black !text-white mb-[2px]"
+          disabled={!playerName.length}
+          on:click={() => {
+            actions.setPlayerName(playerName)
+            actions.goToAppIntro()
+          }}
+        >
+          Start
+        </Button>
+      </Card>
+    {:else}
+      <Button
+        forceFocusOnMount
+        on:click={() => {
+          actions.setPlayerName(playerName)
+          actions.goToAppIntro()
+        }}
+      >
+        Start
+      </Button>
+    {/if}
   </div>
 </UiWrapper>

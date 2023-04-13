@@ -21,6 +21,9 @@ type AppState = {
   readonly visibility: CurrentWritable<'visible' | 'hidden'>
   readonly debug: CurrentWritable<boolean>
   readonly options: {
+    readonly player: {
+      readonly name: CurrentWritable<string>
+    }
     readonly audio: {
       readonly music: CurrentWritable<boolean>
       readonly sfx: CurrentWritable<boolean>
@@ -73,6 +76,9 @@ const _appState: AppState = {
   visibility: createState('visible'),
   debug: createState(false),
   options: {
+    player: {
+      name: createState(localStorage.getItem('tm-player-name') ?? '')
+    },
     audio: {
       music: createState(true),
       sfx: createState(true)
@@ -92,6 +98,9 @@ export const appState = {
   visibility: toCurrentReadable(_appState.visibility),
   debug: toCurrentReadable(_appState.debug),
   options: {
+    player: {
+      name: toCurrentReadable(_appState.options.player.name)
+    },
     audio: {
       music: toCurrentReadable(_appState.options.audio.music),
       sfx: toCurrentReadable(_appState.options.audio.sfx)
@@ -259,6 +268,12 @@ export const actions = buildActions(
 
     togglePostprocessing: () => {
       _appState.options.video.postprocessing.update((postprocessing) => !postprocessing)
+    },
+
+    setPlayerName: (name: string) => {
+      if (!name.length) return { invalid: true }
+      localStorage.setItem('tm-player-name', name)
+      _appState.options.player.name.set(name)
     },
 
     /**

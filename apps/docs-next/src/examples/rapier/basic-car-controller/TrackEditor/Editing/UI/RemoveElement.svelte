@@ -13,7 +13,9 @@
 </script>
 
 <Button
+  class="!bg-red-500 hover:!bg-red-600 hover:!text-black"
   disabled={$validated}
-  size="small"
-  on:click={removeElement}>Remove Element</Button
+  on:click={removeElement}
 >
+  DELETE
+</Button>
