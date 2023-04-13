@@ -47,7 +47,8 @@
   <Canvas
     rendererParameters={{
       powerPreference: 'high-performance',
-      alpha: true
+      alpha: true,
+      preserveDrawingBuffer: true
     }}
   >
     <World order={-999}>
@@ -65,7 +66,7 @@
   </Canvas>
 
   <div
-    class="absolute top-0 left-0 w-full h-full z-10 text-[3vh] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none select-none"
+    class="absolute top-0 left-0 w-full h-full z-10 text-[28px] [&_button]:pointer-events-auto p-[15px] pointer-events-none leading-none select-none"
     id="car-ui-portal-target"
   />
 </div>

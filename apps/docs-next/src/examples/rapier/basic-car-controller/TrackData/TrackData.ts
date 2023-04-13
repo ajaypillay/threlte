@@ -128,19 +128,19 @@ export class TrackData {
     return cyrb53(trackElementsStringRepresentation).toString(16)
   }
 
-  public validate(authorTime: number) {
+  public validate(authorTime: number, save = true) {
     this.validationId = this.calculateValidationId()
     this.trackTimes.author.set(authorTime)
     this.#validated.set(true)
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
   }
 
-  public invalidate() {
+  public invalidate(save = true) {
     this.#validated.set(false)
     this.validationId = ''
     this.trackTimes.author.set(0)
     this.trackRespawns.author.set(0)
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
   }
 
   #checkpointCount = jsonCurrentWritable(0)
@@ -293,7 +293,7 @@ export class TrackData {
     return JSON.stringify(this)
   }
 
-  public addTrackElement(type: TrackElementType) {
+  public addTrackElement(type: TrackElementType, save = true) {
     if (this.#validated.current) {
       console.warn('Cannot add track element to validated track!')
       return
@@ -304,11 +304,11 @@ export class TrackData {
       return trackElements
     })
     this.updateCheckpointCount()
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
     return newTrackElement
   }
 
-  public removeTrackElement(id: string) {
+  public removeTrackElement(id: string, save = true) {
     if (this.#validated.current) {
       console.warn('Cannot remove track element from validated track!')
       return
@@ -317,10 +317,10 @@ export class TrackData {
       return trackElements.filter((trackElement) => trackElement.id !== id)
     })
     this.updateCheckpointCount()
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
   }
 
-  public duplicateTrackElement(id: string) {
+  public duplicateTrackElement(id: string, save = true) {
     if (this.#validated.current) {
       console.warn('Cannot duplicate track element of validated track!')
       return
@@ -338,11 +338,11 @@ export class TrackData {
       return trackElements
     })
     this.updateCheckpointCount()
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
     return newTrackElement
   }
 
-  public setTrackElementType = (id: string, type: TrackElementType) => {
+  public setTrackElementType = (id: string, type: TrackElementType, save = true) => {
     if (this.#validated.current) {
       console.warn('Cannot set track element type of validated track!')
       return
@@ -355,10 +355,10 @@ export class TrackData {
       return trackElements
     })
     this.updateCheckpointCount()
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
   }
 
-  public setTrackElementPosition = (id: string, position: Vector3Tuple) => {
+  public setTrackElementPosition = (id: string, position: Vector3Tuple, save = true) => {
     if (this.#validated.current) {
       console.warn('Cannot set track element position of validated track!')
       return
@@ -370,12 +370,13 @@ export class TrackData {
       }
       return trackElements
     })
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
   }
 
   public setTrackElementRotation = (
     id: string,
-    rotation: [x: number, y: number, z: number, order: string]
+    rotation: [x: number, y: number, z: number, order: string],
+    save = true
   ) => {
     if (this.#validated.current) {
       console.warn('Cannot set track element rotation of validated track!')
@@ -388,6 +389,6 @@ export class TrackData {
       }
       return trackElements
     })
-    this.toLocalStorage()
+    if (save) this.toLocalStorage()
   }
 }

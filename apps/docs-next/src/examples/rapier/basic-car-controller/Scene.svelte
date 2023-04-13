@@ -4,6 +4,7 @@
   import Stats from 'stats.js'
   import { tick } from 'svelte'
   import { derived } from 'svelte/store'
+  import AudioProvider from './AudioProvider.svelte'
   import Env from './Common/Env.svelte'
   import Game from './Game/Game.svelte'
   import IntroAndMenuBackground from './Intro/IntroAndMenuBackground.svelte'
@@ -11,7 +12,6 @@
   import StartPrompt from './UI/StartPrompt.svelte'
   import { appState } from './stores/app'
   import { useKeyPress } from './utils/useKeyPress'
-  import AudioProvider from './AudioProvider.svelte'
 
   const { state, visibility } = appState
 
@@ -77,4 +77,7 @@
   {:else if $state === 'game'}
     <Game />
   {/if}
+
+  <!-- Mount this component to render preview images of TrackElements -->
+  <!-- <TrackElementsViewer /> -->
 </AudioProvider>

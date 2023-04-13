@@ -8,16 +8,18 @@
 </script>
 
 <div class="flex flex-col items-start gap-1">
-  {#each Object.entries(trackElementPrototypes) as [key, value] (key)}
+  {#each Object.entries(trackElementPrototypes) as [key, _] (key)}
     <Button
       disabled={$validated}
-      size="small"
       on:click={() => {
         if (!$currentlySelectedElement) return
         trackData.setTrackElementType($currentlySelectedElement.id, key)
       }}
     >
-      {value.buttonLabel}
+      <img
+        src="/assets/basic-vehicle-controller/TrackElements/images/{key}.png"
+        alt={key}
+      />
     </Button>
   {/each}
 </div>

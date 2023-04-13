@@ -49,6 +49,8 @@
 </script>
 
 <script lang="ts">
+  export let background = true
+
   const { scene } = useThrelte()
 
   let previousBackground = scene.background
@@ -56,8 +58,9 @@
 
   const setEnv = async () => {
     const texture = await loadEnv()
-    scene.background = texture
     scene.environment = texture
+    if (!background) return
+    scene.background = texture
   }
 
   setEnv()
