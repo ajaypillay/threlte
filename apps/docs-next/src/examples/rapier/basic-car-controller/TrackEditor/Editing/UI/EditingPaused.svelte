@@ -34,15 +34,14 @@
     </Button>
 
     <div class="flex flex-col gap-[15px]">
-      <Card class="flex flex-col gap-[20px] max-w-[400px]">
+      <Card class="flex flex-col gap-[15px] max-w-[400px]">
         <div>Track details</div>
-        <TrackDetails />
         <div class="pb-[2px]">
-          <SaveTrack />
+          <TrackDetails />
         </div>
       </Card>
 
-      <Card class="flex flex-col gap-[20px] max-w-[400px]">
+      <Card class="flex flex-col gap-[15px] max-w-[400px]">
         <div>TRACK VALIDATION</div>
 
         <div class="text-[0.65em]">
@@ -52,6 +51,16 @@
 
         <div class="pb-[2px]">
           <StartTrackValidation />
+        </div>
+      </Card>
+
+      <Card class="flex flex-col gap-[15px] max-w-[400px]">
+        <div>Track export</div>
+
+        <div class="text-[0.65em]">Share your track with your friends.</div>
+
+        <div class="pb-[2px]">
+          <SaveTrack />
         </div>
       </Card>
     </div>

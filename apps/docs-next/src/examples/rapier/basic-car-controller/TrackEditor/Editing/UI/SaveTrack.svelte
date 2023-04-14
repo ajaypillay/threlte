@@ -11,6 +11,7 @@
 </script>
 
 <Button
+  forceFocusOnMount
   style="inverted"
   on:click={onClick}>Export Track</Button
 >
