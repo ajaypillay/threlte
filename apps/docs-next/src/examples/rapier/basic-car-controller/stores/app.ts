@@ -59,6 +59,7 @@ type GameState = {
     readonly quaternion: CurrentWritable<[number, number, number, number]>
   }
   readonly trackEditor: {
+    readonly showInfo: CurrentWritable<boolean>
     readonly state: CurrentWritable<'editing' | 'validation'>
     readonly editing: {
       readonly view: CurrentWritable<'car' | 'orbit'>
@@ -153,6 +154,7 @@ const _gameState: GameState = {
     quaternion: createState([0, 0, 0, 0])
   },
   trackEditor: {
+    showInfo: createState(true),
     state: createState('editing'),
     editing: {
       view: createState('orbit')
@@ -181,6 +183,7 @@ export const gameState = {
     quaternion: toCurrentReadable(_gameState.car.quaternion)
   },
   trackEditor: {
+    showInfo: toCurrentReadable(_gameState.trackEditor.showInfo),
     state: toCurrentReadable(_gameState.trackEditor.state),
     editing: {
       view: toCurrentReadable(_gameState.trackEditor.editing.view)
@@ -488,6 +491,14 @@ export const actions = buildActions(
       _gameState.gameType.set('track-editor')
       _gameState.trackEditor.state.set('editing')
       _gameState.trackEditor.editing.view.set('orbit')
+    },
+
+    showTrackEditorInfo: () => {
+      _gameState.trackEditor.showInfo.set(true)
+    },
+
+    hideTrackEditorInfo: () => {
+      _gameState.trackEditor.showInfo.set(false)
     },
 
     setTrackEditorView: (view: 'orbit' | 'car') => {

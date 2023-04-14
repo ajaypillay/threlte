@@ -1,4 +1,4 @@
-<div class="relative w-full top-0 left-0 flex flex-row items-center">
+<div class="relative w-full top-0 left-0 flex flex-row items-start">
   <div class="flex-1">
     <slot name="left" />
   </div>

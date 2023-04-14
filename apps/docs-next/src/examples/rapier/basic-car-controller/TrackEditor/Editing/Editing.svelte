@@ -28,10 +28,12 @@
   import { Euler } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
   import BackButton from '../../UI/components/BackButton.svelte'
+  import EditingInfo from './UI/EditingInfo.svelte'
 
   export let trackData: TrackData
 
   const { paused } = gameState
+  const { showInfo } = gameState.trackEditor
   const { view } = gameState.trackEditor.editing
 
   $: carActive = $view === 'car' && !$paused
@@ -121,17 +123,28 @@
 </script>
 
 <!-- UI -->
-{#if $paused}
+{#if $showInfo}
+  <EditingInfo />
+{:else if $paused}
   <EditingPaused />
 {:else if $view === 'orbit'}
   <UiWrapper>
     <TopBarLayout>
-      <Button
-        on:click={() => {
-          actions.pauseGame()
-        }}
-        slot="topbar-left">Menu</Button
+      <div
+        slot="topbar-left"
+        class="flex flex-col gap-[2px] w-fit"
       >
+        <Button
+          on:click={() => {
+            actions.pauseGame()
+          }}>Menu</Button
+        >
+        <Button
+          on:click={() => {
+            actions.showTrackEditorInfo()
+          }}>Info</Button
+        >
+      </div>
 
       <div slot="topbar-center">Track editor</div>
 
@@ -194,16 +207,16 @@
 {:else if $view === 'car'}
   <UiWrapper>
     <TopBarLayout>
-      <BackButton
+      <div
         slot="topbar-left"
-        on:click={() => actions.setTrackEditorView('orbit')}
+        class="flex flex-col gap-[2px] w-fit"
       >
-        Track
-      </BackButton>
-      <Button
-        forceFocusOnMount
-        on:click={() => actions.resetGameplay()}>Reset</Button
-      >
+        <BackButton on:click={() => actions.setTrackEditorView('orbit')}>Track</BackButton>
+        <Button
+          forceFocusOnMount
+          on:click={() => actions.resetGameplay()}>Reset</Button
+        >
+      </div>
     </TopBarLayout>
   </UiWrapper>
 {/if}
@@ -241,7 +254,7 @@
 />
 
 <T.PerspectiveCamera
-  makeDefault={!carActive}
+  makeDefault={$view === 'orbit'}
   on:create={({ ref }) => {
     ref.position.set(30, 30, 30)
     ref.lookAt(0, 0, 0)
