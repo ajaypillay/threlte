@@ -9,6 +9,8 @@
   import { actions, appState, gameState } from '../stores/app'
   import { PerspectiveCamera, Quaternion, Vector3 } from 'three'
   import CarState from './CarState.svelte'
+  import { useKeyboardNavigation } from '../UI/KeyboardNavigation.svelte'
+  import { onDestroy } from 'svelte'
 
   let carCam: PerspectiveCamera
   let freezeCam: PerspectiveCamera
@@ -22,6 +24,16 @@
   export let active = false
   export let useCarCamera = true
   export let volume = 1
+
+  const { disable, enable } = useKeyboardNavigation()
+  $: if (active) {
+    disable()
+  } else {
+    enable()
+  }
+  onDestroy(() => {
+    enable()
+  })
 
   // The car is respawning on certain events
   actions.use('resetCar', () => {

@@ -27,6 +27,7 @@
   import { createTrackEditorContext } from './context'
   import { Euler } from 'three'
   import { DEG2RAD } from 'three/src/math/MathUtils'
+  import BackButton from '../../UI/components/BackButton.svelte'
 
   export let trackData: TrackData
 
@@ -122,99 +123,89 @@
 <!-- UI -->
 {#if $paused}
   <EditingPaused />
-{:else}
-  <!-- else content here -->
-  {#if $view === 'orbit'}
-    <UiWrapper>
-      <TopBarLayout>
-        <Button
-          on:click={() => {
-            actions.pauseGame()
-          }}
-          slot="topbar-left">Menu</Button
-        >
+{:else if $view === 'orbit'}
+  <UiWrapper>
+    <TopBarLayout>
+      <Button
+        on:click={() => {
+          actions.pauseGame()
+        }}
+        slot="topbar-left">Menu</Button
+      >
 
-        {#if $validated}
-          <Card class="flex flex-col gap-[20px] max-w-[400px]">
-            <div>Track is validated</div>
+      <div slot="topbar-center">Track editor</div>
 
-            <div class="text-[0.65em]">
-              The track is validated and can be played. While the track is validated, you cannot
-              edit it. If you want to edit the track, you have to unlock it first.
+      <Button
+        slot="topbar-right"
+        on:click={() => actions.setTrackEditorView('car')}
+      >
+        Play
+      </Button>
+
+      {#if $validated}
+        <Card class="flex flex-col gap-[20px] max-w-[400px]">
+          <div>Track is validated</div>
+
+          <div class="text-[0.65em]">
+            The track is validated and can be played. While the track is validated, you cannot edit
+            it. If you want to edit the track, you have to unlock it first.
+          </div>
+
+          <div class="pb-[2px]">
+            <Button
+              style="red"
+              on:click={() => {
+                trackData.invalidate()
+              }}
+            >
+              Unlock
+            </Button>
+          </div>
+        </Card>
+      {/if}
+
+      <div class="absolute bottom-0 left-0">
+        <AddElement />
+      </div>
+
+      {#if $currentlySelectedElement && $currentlySelectedElementType}
+        <div class="absolute bottom-0 right-0">
+          <Card>
+            <div class="mb-[20px]">
+              {trackElementPrototypes[$currentlySelectedElementType].buttonLabel}
             </div>
-
-            <div class="pb-[2px]">
-              <Button
-                style="red"
-                on:click={() => {
-                  trackData.invalidate()
-                }}
-              >
-                Unlock
-              </Button>
+            <div class="mb-[20px]">
+              {#key $currentlySelectedElement.id}
+                <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
+              {/key}
+            </div>
+            <div class="flex flex-row justify-between gap-[2px] text-[0.65em] pb-[2px]">
+              <div class="flex flex-row gap-[2px]">
+                <DuplicateElement />
+                <RotateElement />
+              </div>
+              <RemoveElement />
             </div>
           </Card>
-        {/if}
-
-        <div class="absolute bottom-0 left-0">
-          <AddElement />
         </div>
-
-        {#if $currentlySelectedElement && $currentlySelectedElementType}
-          <div class="absolute bottom-0 right-0">
-            <Card>
-              <div class="mb-[20px]">
-                {trackElementPrototypes[$currentlySelectedElementType].buttonLabel}
-              </div>
-              <div class="mb-[20px]">
-                {#key $currentlySelectedElement.id}
-                  <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
-                {/key}
-              </div>
-              <div class="flex flex-row justify-between gap-[2px] text-[0.65em] pb-[2px]">
-                <div class="flex flex-row gap-[2px]">
-                  <DuplicateElement />
-                  <RotateElement />
-                </div>
-                <RemoveElement />
-              </div>
-            </Card>
-          </div>
-        {/if}
-
-        <!-- <div class="absolute w-full h-full left-0 top-0">
-        </div> -->
-
-        <!-- <div class="relative w-full h-full top-0 left-0">
-        <StartTrackValidation />
-        <SaveTrack />
-        <TrackDetails />
-
-        {#if $currentlySelectedElement && $currentlySelectedElementType}
-          <div class="absolute top-0 right-0">
-            <Card>
-              <div class="mb-[10px]">
-                {trackElementPrototypes[$currentlySelectedElementType].buttonLabel}
-              </div>
-              <div class="mb-[20px]">
-                {#key $currentlySelectedElement.id}
-                  <ElementDetails currentlySelectedTrackElement={$currentlySelectedElement} />
-                {/key}
-              </div>
-              <div class="flex flex-row justify-between gap-[2px] text-[0.65em] pb-[2px]">
-                <div class="flex flex-row gap-[2px]">
-                  <DuplicateElement />
-                  <RotateElement />
-                </div>
-                <RemoveElement />
-              </div>
-            </Card>
-          </div>
-        {/if}
-      </div> -->
-      </TopBarLayout>
-    </UiWrapper>
-  {/if}
+      {/if}
+    </TopBarLayout>
+  </UiWrapper>
+{:else if $view === 'car'}
+  <UiWrapper>
+    <TopBarLayout>
+      <BackButton
+        slot="topbar-left"
+        on:click={() => actions.setTrackEditorView('orbit')}
+      >
+        Track
+      </BackButton>
+      <Button
+        forceFocusOnMount
+        on:click={() => actions.resetGameplay()}>Reset</Button
+      >
+    </TopBarLayout>
+  </UiWrapper>
 {/if}
 
 <!-- 3D -->

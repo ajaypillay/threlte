@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { c } from '../../../../../../lib/classes'
   import {
     TrackElementCategory,
     TrackElementPrototypeType,
@@ -35,10 +36,10 @@
   })
 </script>
 
-<div class="flex flex-row items-end gap-[2px]">
+<div class={c('flex flex-row items-end gap-[2px]', $validated && 'opacity-50')}>
   {#each categories as category, index}
     <div class="flex flex-col gap-[2px]">
-      {#if selectedCategory === category}
+      {#if selectedCategory === category && !$validated}
         {#each category.elements as element, index}
           <Button
             class="!px-0"

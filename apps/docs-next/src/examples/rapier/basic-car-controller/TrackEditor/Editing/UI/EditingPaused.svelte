@@ -11,6 +11,9 @@
 </script>
 
 <UiWrapper>
+  <!-- Prevent user interaction on canvas -->
+  <div class="absolute top-0 left-0 w-full h-full bg-black/40 pointer-events-auto" />
+
   <TopBarLayout>
     <BackButton
       slot="topbar-left"
@@ -18,6 +21,8 @@
         actions.resumeGame()
       }}
     />
+
+    <div slot="topbar-center">Track Menu</div>
 
     <Button
       slot="topbar-right"
@@ -41,8 +46,8 @@
         <div>TRACK VALIDATION</div>
 
         <div class="text-[0.65em]">
-          A track must be validated before it can be exported or played. To validate a track, it
-          must be completed from start to finish.
+          A track must be validated before it can be played. To validate a track, it must be
+          completed from start to finish.
         </div>
 
         <div class="pb-[2px]">

@@ -8,12 +8,11 @@
 
   const { currentlySelectedElement, isDragging, trackData } = useTrackEditor()
 
-  const { paused } = gameState
   const { state } = gameState.trackEditor
 
   const { validated } = trackData
 
-  $: if ($validated || $state === 'validation' || $paused) {
+  $: if ($validated || $state === 'validation') {
     currentlySelectedElement.set(undefined)
   }
 
@@ -23,11 +22,11 @@
 <T.Group
   on:click={(e) => {
     e.stopPropagation()
-    if ($isDragging || $validated || $paused) return
+    if ($isDragging || $validated) return
     currentlySelectedElement.set(trackElement)
   }}
   on:pointermissed={() => {
-    if ($isDragging || $validated || $paused) return
+    if ($isDragging || $validated) return
     currentlySelectedElement.set(undefined)
   }}
 >

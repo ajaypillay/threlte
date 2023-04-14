@@ -51,12 +51,12 @@
     </T.Mesh>
   </Collider>
 
-  <T.Group position.y={2.5 + 1.25}>
+  <T.Group position.y={2.5 + 0.2}>
     <CollisionGroups groups={[3]}>
       <Collider
         type="static"
         shape="cuboid"
-        args={[5, 1.25, 5]}
+        args={[5, 0.2, 5]}
         on:sensorenter={() => {
           actions.finishReached()
         }}

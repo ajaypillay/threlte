@@ -3,20 +3,10 @@
   import { Debug, World } from '@threlte/rapier'
   import Loader from './Loader/Loader.svelte'
   import Scene from './Scene.svelte'
-  import {
-    appState,
-    actions,
-    printState,
-    saveStateToLocalStorage,
-    loadStateFromLocalStorage
-  } from './stores/app'
+  import { appState, actions, printState } from './stores/app'
   import { useKeyPress } from './utils/useKeyPress'
 
   const { debug } = appState
-
-  useKeyPress('o', () => {
-    actions.toggleDebug()
-  })
 
   const onVisibilityChange = () => {
     if (document.hidden || document.visibilityState === 'hidden') {
@@ -28,16 +18,6 @@
 
   useKeyPress('Shift+P', () => {
     printState()
-  })
-
-  useKeyPress('Shift+I', (e) => {
-    e.preventDefault()
-    saveStateToLocalStorage()
-  })
-
-  useKeyPress('Shift+K', (e) => {
-    e.preventDefault()
-    loadStateFromLocalStorage()
   })
 </script>
 

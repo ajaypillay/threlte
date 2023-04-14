@@ -16,6 +16,8 @@
     ) => { destroy: () => void }
     focusElement: (element: HTMLElement) => void
     focusedElement: Readable<HTMLElement | undefined>
+    disable: () => void
+    enable: () => void
   }
 
   export const useKeyboardNavigation = () => {
@@ -42,6 +44,14 @@
 
   let navigationalElements: Set<NavigationalElement> = new Set()
   let focusedElement: HTMLElement | undefined = undefined
+
+  let disabled = false
+  const disable = () => {
+    disabled = true
+  }
+  const enable = () => {
+    disabled = false
+  }
 
   // for the context
   const focusedElementStore = writable<HTMLElement | undefined>(undefined)
@@ -173,7 +183,9 @@
     focusElement,
     focusedElement: {
       subscribe: focusedElementStore.subscribe
-    }
+    },
+    disable,
+    enable
   }
 
   setContext<KeyboardNavigationContext>('keyboard-navigation-context', context)
@@ -187,6 +199,8 @@
   }
 
   const onKeyDown = (event: KeyboardEvent) => {
+    if (disabled) return
+
     // if an arrow key is pressed, focus the closest navigational element.
     // if no element is focused, assume, that the currently selected element is in the center of the viewport and select the closest element.
 
@@ -280,6 +294,7 @@
   }
 
   const onPointerMove = async (e: PointerEvent) => {
+    navigationType = 'pointer'
     resetByPointerEvent(e)
   }
 </script>

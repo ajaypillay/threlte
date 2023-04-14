@@ -25,12 +25,12 @@
 
   const loadLensflareTextures = async () => {
     const loader = useLoader(TextureLoader)
-    const distances = [0, 0.4, 0.8]
-    const sizes = [512, 512, 256]
-    const colors = [new Color('#767676'), new Color('#ADADAD'), new Color('#E4E4E4')]
+    const distances = [0, /*0.4,*/ 0.8]
+    const sizes = [512, /*512,*/ 300]
+    const colors = [new Color('#8A8A8A'), /*new Color('#ADADAD'),*/ new Color('#F9F9F9')]
     const textures = await loader.load([
       '/assets/basic-vehicle-controller/lensflare/lensflare0.png',
-      '/assets/basic-vehicle-controller/lensflare/lensflare2.png',
+      // '/assets/basic-vehicle-controller/lensflare/lensflare2.png',
       '/assets/basic-vehicle-controller/lensflare/lensflare3.png'
     ])
     return textures.map((texture, index) => {
