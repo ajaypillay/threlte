@@ -310,8 +310,8 @@
 {#if focusedElementCenter && navigationalElements.size > 0}
   <UiWrapper>
     <div
-      class="absolute w-8 h-8 z-50 bg-[url(/assets/basic-vehicle-controller/cursor.png)] bg-contain"
-      style="top: {$focusedElementCenterSpring.y}px; left: {$focusedElementCenterSpring.x}px;"
+      class="absolute top-0 left-0 w-8 h-8 z-50 bg-[url(/assets/basic-vehicle-controller/cursor.png)] bg-contain"
+      style="transform: translateX({$focusedElementCenterSpring.x}px) translateY({$focusedElementCenterSpring.y}px)"
     />
   </UiWrapper>
 {/if}

@@ -25,14 +25,14 @@
         <div>Keyboard controls</div>
 
         <div class="text-[0.65em]">
-          Shift + D – Duplicate selected element<br />
-          Shift + R – Rotate selected element<br />
-          T – Translate controls<br />
-          R – Rotate controls<br />
-          G – Toggle Transformation spaces "world" and "local"<br />
-          V – Toggle Test Drive Mode<br />
-          Control + Backspace – Delete selected element<br />
-          Shift + Drag – Snap to grid
+          Shift + D - Duplicate selected element<br />
+          Shift + R - Rotate selected element<br />
+          T - Translate controls<br />
+          R - Rotate controls<br />
+          G - Toggle Transformation spaces "world" and "local"<br />
+          V - Toggle Test Drive Mode<br />
+          Control + Backspace - Delete selected element<br />
+          Shift + Drag - Snap to grid
         </div>
       </Card>
 
